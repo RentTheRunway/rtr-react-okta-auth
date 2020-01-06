@@ -335,12 +335,12 @@ To get Okta to return the groups, you need to add a claim that returns them. The
 4. *More detail below*
 
 ### Claims
-1. Create a new Claim giving it a name e.g. "CanDoA"
-2. Include in the "ID Token" "Always"
-3. "Value Type" = Groups
+1. Create a new Claim giving it a name e.g. `CanDoA`
+2. Include in the "ID Token" `Always`
+3. Value Type `Groups`
 4. Filter "Equals" &lt;_the-group-name_&gt;
-5. Include in "Any Scope" or in a designated scope
-Now these claims will be present in the `user` object (`const { user } = useContext(AuthContext)` details below )
+5. Include in `Any Scope` or in a designated scope
+6. Now these claims will be present in the `user` object (`const { user } = useContext(AuthContext)` details below )
 
 ## Detailed Okta Setup
 ### Setting up the Okta Application
@@ -383,7 +383,7 @@ In the 'Claims' tab, add a claim with the following values.
 \
 This will add a default claim called 'groups' that will return a list of Okta user groups for which the user is a member. 
 
-This is not the only way to achieve this but in order to work with the `rtr-react-okta-auth` the claim groups should exist and its value should be the group names.
+This is not the only way to achieve this but in order to work with the `rtr-react-okta-auth` the claim `groups` should exist and its value should be the group names.
 
 
 In the 'Access Policies' tab, enable access policy by adding a rule and configuring accordingly
