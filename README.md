@@ -3,7 +3,7 @@ A library that allows a React application to interact with Okta.
 It expands on the functionality of [okta-react](https://github.com/okta/okta-oidc-js/tree/master/packages/okta-react). 
 
 `okta-react` is detailed by example [here](https://developer.okta.com/quickstart/#/react/nodejs/express) however it has some deficiencies, specifically, it only handles authentication, it does not provide for authorization.
-`rtr-react-okta-auth` provides for group-based authorization.
+`@rent-the-runway/rtr-react-okta-auth` provides for group-based authorization.
 \
 Specifically, access to Routes and JSX can be permitted to users
 * who are members of particular Okta user groups or additionally
@@ -46,7 +46,7 @@ import Admin from "./pages/Admin";
 import Standard from "./pages/Standard";
 ```
 
-#### Imports from `rtr-react-okta-auth`
+#### Imports from `@rent-the-runway/rtr-react-okta-auth`
 typescript permits interface `IAuthContext`. For JavaScript, exclude this.
 ```javascript
 import {
@@ -56,7 +56,7 @@ import {
   useAuthContextState,
   RouteWhenMemberOfAny,
   withAuthAwareness
-} from "rtr-react-okta-auth";
+} from "@rent-the-runway/rtr-react-okta-auth";
 ```
 
 #### Okta App config
@@ -254,7 +254,7 @@ const App: FC<IEmptyProps> = props => {
 Use it as follows:
 
 ```javascript
-import { AuthContext, IAuthContext } from "rtr-react-okta-auth";
+import { AuthContext, IAuthContext } from "@rent-the-runway/rtr-react-okta-auth";
 ```
 
 TypeScript
@@ -383,7 +383,7 @@ In the 'Claims' tab, add a claim with the following values.
 \
 This will add a default claim called 'groups' that will return a list of Okta user groups for which the user is a member. 
 
-This is not the only way to achieve this but in order to work with the `rtr-react-okta-auth` the claim `groups` should exist and its value should be the group names.
+This is not the only way to achieve this but in order to work with the `@rent-the-runway/rtr-react-okta-auth` the claim `groups` should exist and its value should be the group names.
 
 
 In the 'Access Policies' tab, enable access policy by adding a rule and configuring accordingly
