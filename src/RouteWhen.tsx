@@ -1,19 +1,18 @@
 import React, { useContext, FC } from "react";
 import { Route } from "react-router-dom";
 import { AuthContext } from "./AuthContext";
-import IRouteWhenHasClaimsProps from "./models/IRouteWhenHasClaimsProps";
-import { hasAllProperties } from './Intersections';
+import IRouteWhen from "./models/IRouteWhenProps";
 import DefaultUnauthorized from "./DefaultUnauthorized";
 import UnAuthenticated from "./UnAuthenticated";
 import IAuthContext from "./models/IAuthContext";
 
-const RouteWhenHasAllClaims: FC<IRouteWhenHasClaimsProps> = props => {
-    const { claims, component, unauthorizedComponent, ...rest } = props;
+const RouteWhen: FC<IRouteWhen> = props => {
+    const { component, unauthorizedComponent, isTrue, ...rest } = props;
     const authContext = useContext<IAuthContext>(AuthContext);
     const isAuthenticated = authContext.isAuthenticated;
-    const intersects = hasAllProperties(authContext.user, claims);
+    const hasAccess = isTrue();
     const compToRender = isAuthenticated
-      ? intersects
+      ? hasAccess
         ? component
         : !!unauthorizedComponent
         ? unauthorizedComponent
@@ -22,4 +21,4 @@ const RouteWhenHasAllClaims: FC<IRouteWhenHasClaimsProps> = props => {
     return <Route {...rest} component={compToRender} />;
   };
 
-  export default RouteWhenHasAllClaims;
+  export default RouteWhen;
