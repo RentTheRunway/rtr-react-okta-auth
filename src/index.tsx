@@ -17,6 +17,12 @@ import RouteWhenHasAnyClaims from "./RouteWhenHasAnyClaims";
 import RouteWhenHasAllClaims from "./RouteWhenHasAllClaims";
 import IRouteWhenHasClaimProps from "./models/IRouteWhenHasClaimProps";
 import IRouteWhenHasClaimsProps from "./models/IRouteWhenHasClaimsProps";
+import IRouteWhenProps from "./models/IRouteWhenProps";
+import IWhenProps from "./models/IWhenProps";
+import IUseWhen from "./models/IUseWhen";
+import When from "./When";
+import RouteWhen from "./RouteWhen";
+import useWhen from "./useWhen";
 
 
 export {
@@ -47,6 +53,13 @@ export {
   IWhenHasClaimProps,
   IWhenHasClaimsProps,
   IRouteWhenHasClaimProps,
-  IRouteWhenHasClaimsProps
-};
+  IRouteWhenHasClaimsProps,
 
+  //When
+  When,
+  RouteWhen,
+  useWhen,
+  IWhenProps,
+  IRouteWhenProps,
+  IUseWhen
+};

@@ -6,10 +6,11 @@ import { hasFullIntersection } from "./Intersections";
 
 import DefaultUnauthorized from "./DefaultUnauthorized";
 import UnAuthenticated from "./UnAuthenticated";
+import IAuthContext from "./models/IAuthContext";
 
 const RouteWhenMemberOfAll: FC<IRouteWhenMemberOfProps> = props => {
   const { groups, component, unauthorizedComponent, ...rest } = props;
-  const authContext = useContext(AuthContext);
+  const authContext = useContext<IAuthContext>(AuthContext);
   const isAuthenticated = authContext.isAuthenticated;
   const intersects = hasFullIntersection(groups, authContext.groups);
   const compToRender = isAuthenticated
