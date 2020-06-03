@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { withAuth } from "@okta/okta-react";
+import { withOktaAuth } from "@okta/okta-react";
 import { AuthContext } from "./AuthContext";
 import IAuthContext from "./models/IAuthContext";
 
@@ -33,7 +33,7 @@ function withAuthUpdator(Component:any, onAuthKnown:()=>void, onAuthPending:()=>
 }
 
 function withAuthAwareness(Component:any, onAuthKnown:()=>void = () => {}, onAuthPending:()=>void = () => {}) {
-  return withAuth(withAuthUpdator(Component, onAuthKnown, onAuthPending));
+  return withOktaAuth(withAuthUpdator(Component, onAuthKnown, onAuthPending));
 }
 
 export default withAuthAwareness;

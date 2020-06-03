@@ -1,11 +1,11 @@
 import React from "react";
 import { cleanup, render } from "@testing-library/react";
-import { withAuth } from "@okta/okta-react";
+import { withOktaAuth } from "@okta/okta-react";
 import { AuthContext, IAuthContext, withAuthAwareness } from "../index";
 import { act } from "react-dom/test-utils";
 
 jest.mock("@okta/okta-react", () => ({
-  withAuth: (Component: any) => (props: any) => <Component {...props} />
+  withOktaAuth: (Component: any) => (props: any) => <Component {...props} />
 }));
 
 const innerCompTestId = "innerComp";
@@ -48,7 +48,7 @@ describe("withAuthAwarenes", () => {
   it("should not render when current url is the callback url", done => {
     const mockAuthContext = getMockAuthContext();
     const mockAuth = getMockAuth(callbackUrl);
-    const AuthComp = withAuth(InnerComp);
+    const AuthComp = withOktaAuth(InnerComp);
     const AuthAwareComp = withAuthAwareness(AuthComp);
     const jsx = (
       <AuthContext.Provider value={mockAuthContext}>
@@ -74,7 +74,7 @@ describe("withAuthAwarenes", () => {
       new Promise((resolve: () => void) => {
         props.promiseResolve = resolve;
       });
-    const AuthComp = withAuth(InnerComp);
+    const AuthComp = withOktaAuth(InnerComp);
     const AuthAwareComp = withAuthAwareness(
       AuthComp,
       props.onAuthKnown,
