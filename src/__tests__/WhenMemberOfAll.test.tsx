@@ -20,7 +20,7 @@ describe("<WhenMemberOfAll />", () => {
       login: () => {},
       logout: (redirectUrl?: any) => new Promise(() => {}),
       auth: {},
-      _reAuthorize: (auth: any) => new Promise(() => {})
+      _applyAuthState: (auth: any) => new Promise(() => {}),
     };
   }
 
@@ -50,7 +50,7 @@ describe("<WhenMemberOfAll />", () => {
   it("NOT renders content when not full match", () => {
     const { queryByTestId } = renderForTargetGroups([
       defaultAuthenticatedGroups[0],
-      "none"
+      "none",
     ]);
     expect(queryByTestId(innerHtmlContent)).toBeFalsy();
   });

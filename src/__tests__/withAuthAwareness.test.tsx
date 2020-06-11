@@ -1,28 +1,31 @@
 import React from "react";
 import { cleanup, render } from "@testing-library/react";
 import { withOktaAuth } from "@okta/okta-react";
-import { AuthContext, IAuthContext, withAuthAwareness } from "../index";
+import { AuthContext, IAuthContext, withAuthAwareness } from "..";
 import { act } from "react-dom/test-utils";
 
+let mockRedirectUrl = "http://localhost/";
+let mockAuthStateIsPending = false;
+let mockAuthStateIsAuthenticated = true;
+
 jest.mock("@okta/okta-react", () => ({
-  withOktaAuth: (Component: any) => (props: any) => <Component {...props} />
+  withOktaAuth: (Component: any) => (props: any) => <Component {...props} />,
+  useOktaAuth: () => ({
+    authService: {
+      _config: {
+        redirectUri: mockRedirectUrl,
+      },
+    },
+    authState: {
+      isPending: mockAuthStateIsPending,
+      isAuthenticated: mockAuthStateIsAuthenticated,
+    },
+  }),
 }));
 
 const innerCompTestId = "innerComp";
-const callbackUrl = "http://localhost/";
-const url = "/other";
-
-function getMockAuth(redirectUri: string) {
-  return {
-    auth: {
-      _config: {
-        redirectUri: redirectUri
-      }
-    }
-  };
-}
-
-const mockReauthorize = jest.fn();
+const otherUrl = "/other";
+const mockApplyAuthState = jest.fn();
 
 function getMockAuthContext(): IAuthContext {
   return {
@@ -33,7 +36,7 @@ function getMockAuthContext(): IAuthContext {
     login: (auth: any) => new Promise(() => {}),
     logout: (redirectUrl?: any) => new Promise(() => {}),
     auth: {},
-    _reAuthorize: mockReauthorize
+    _applyAuthState: mockApplyAuthState,
   };
 }
 
@@ -43,20 +46,39 @@ describe("withAuthAwarenes", () => {
   beforeEach(() => {
     cleanup();
     jest.restoreAllMocks();
+    mockRedirectUrl = "http://localhost/";
+    mockAuthStateIsPending = false;
+    mockAuthStateIsAuthenticated = true;
   });
 
-  it("should not render when current url is the callback url", done => {
+  it("should not render when current url is the callback url", (done) => {
     const mockAuthContext = getMockAuthContext();
-    const mockAuth = getMockAuth(callbackUrl);
     const AuthComp = withOktaAuth(InnerComp);
     const AuthAwareComp = withAuthAwareness(AuthComp);
     const jsx = (
       <AuthContext.Provider value={mockAuthContext}>
-        <AuthAwareComp {...mockAuth} />
+        <AuthAwareComp />
       </AuthContext.Provider>
     );
     const { container } = render(jsx);
-    expect(mockReauthorize).toBeCalledTimes(0);
+    expect(mockApplyAuthState).toBeCalledTimes(0);
+    expect(container.firstChild).toBeNull();
+    done();
+  });
+
+  it("should not render the comp when authState.isPending", async (done) => {
+    mockRedirectUrl = otherUrl;
+    mockAuthStateIsPending = true;
+    const mockAuthContext = getMockAuthContext();
+    const AuthComp = withOktaAuth(InnerComp);
+    const AuthAwareComp = withAuthAwareness(AuthComp);
+    const jsx = (
+      <AuthContext.Provider value={mockAuthContext}>
+        <AuthAwareComp />
+      </AuthContext.Provider>
+    );
+    const { container } = render(jsx);
+    expect(mockApplyAuthState).toBeCalledTimes(0);
     expect(container.firstChild).toBeNull();
     done();
   });
@@ -68,9 +90,8 @@ describe("withAuthAwarenes", () => {
   }
 
   function getSetup(props: ISetupProps) {
-    const mockAuth = getMockAuth(url);
     const mockAuthContext = getMockAuthContext();
-    mockAuthContext._reAuthorize = (auth: any) =>
+    mockAuthContext._applyAuthState = (auth: any) =>
       new Promise((resolve: () => void) => {
         props.promiseResolve = resolve;
       });
@@ -82,19 +103,21 @@ describe("withAuthAwarenes", () => {
     );
     const jsx = (
       <AuthContext.Provider value={mockAuthContext}>
-        <AuthAwareComp {...mockAuth} />
+        <AuthAwareComp />
       </AuthContext.Provider>
     );
 
     return {
-      jsx
+      jsx,
     };
   }
 
-  it("should render the comp only after the authentication state is known", async done => {
+  it("should render the comp only after the authentication state is known", async (done) => {
+    mockRedirectUrl = otherUrl;
     const promiseResolveHolder = {
-      promiseResolve: () => {}
+      promiseResolve: () => {},
     };
+
     const { jsx } = getSetup(promiseResolveHolder);
     const { queryByTestId } = render(jsx);
     expect(queryByTestId(innerCompTestId)).toBeFalsy();
@@ -105,13 +128,14 @@ describe("withAuthAwarenes", () => {
     done();
   });
 
-  it("should call onAuthPending() and onAuthKnown() when supplied", async done => {
+  it("should call onAuthKnown() when supplied", async (done) => {
+    mockRedirectUrl = otherUrl;
     const onAuthKnown = jest.fn();
     const onAuthPending = jest.fn();
     const promiseResolveHolder = {
       promiseResolve: () => {},
       onAuthKnown,
-      onAuthPending
+      onAuthPending,
     };
     const { jsx } = getSetup(promiseResolveHolder);
     const { queryByTestId } = render(jsx);
@@ -121,6 +145,24 @@ describe("withAuthAwarenes", () => {
     });
     expect(queryByTestId(innerCompTestId)).toBeTruthy();
     expect(onAuthKnown).toBeCalledTimes(1);
+    expect(onAuthPending).toBeCalledTimes(0);
+    done();
+  });
+
+  it("should call onAuthPending() when supplied", async (done) => {
+    mockRedirectUrl = otherUrl;
+    mockAuthStateIsPending = true;
+    const onAuthKnown = jest.fn();
+    const onAuthPending = jest.fn();
+    const promiseResolveHolder = {
+      promiseResolve: () => {},
+      onAuthKnown,
+      onAuthPending,
+    };
+    const { jsx } = getSetup(promiseResolveHolder);
+    const { queryByTestId } = render(jsx);
+    expect(queryByTestId(innerCompTestId)).toBeFalsy();
+    expect(onAuthKnown).toBeCalledTimes(0);
     expect(onAuthPending).toBeCalledTimes(1);
     done();
   });

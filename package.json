@@ -1,6 +1,6 @@
 {
   "name": "@rent-the-runway/rtr-react-okta-auth",
-  "version": "1.0.2",
+  "version": "2.0.1",
   "private": false,
   "description": "React hooks library for interacting with Okta. Lock out UI and Routes based on user authentication and the okta-user-groups the user belongs to. Can also lock out UI or Routes based on Claims.",
   "homepage": "https://github.com/RentTheRunway/rtr-react-okta-auth",

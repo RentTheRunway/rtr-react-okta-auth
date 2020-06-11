@@ -12,7 +12,11 @@ describe("AuthContext useAuthContextState()", () => {
   const oktaAuthLogin = jest.fn();
   const oktaAuthLogout = jest.fn();
 
-  let mockIsAuthenticated = true;
+  let mockAuthState = {
+    isPending: false,
+    isAuthenticated: true,
+  };
+
   const mockUserObj: {
     given_name: string;
     family_name: string;
@@ -20,26 +24,19 @@ describe("AuthContext useAuthContextState()", () => {
   } = {
     given_name: "given",
     family_name: "family",
-    groups: ["one", "two"]
+    groups: ["one", "two"],
   };
 
   const mockOktaAuth = {
-    isAuthenticated: () => {
-      return new Promise<boolean>(resolve => {
-        process.nextTick(() => {
-          resolve(mockIsAuthenticated);
-        });
-      });
+    authService: {
+      getAuthState: () => mockAuthState,
+      getUser: () => {
+        return Promise.resolve(mockUserObj);
+      },
+      login: oktaAuthLogin,
+      logout: oktaAuthLogout,
     },
-    login: oktaAuthLogin,
-    logout: oktaAuthLogout,
-    getUser: () => {
-      return new Promise<any>(resolve => {
-        process.nextTick(() => {
-          resolve(mockUserObj);
-        });
-      });
-    }
+    authState: mockAuthState,
   };
 
   function getTestableCustomHook(): IAuthContext {
@@ -56,7 +53,7 @@ describe("AuthContext useAuthContextState()", () => {
     let authContextState = getTestableCustomHook();
 
     await act(async () => {
-      await authContextState._reAuthorize({ auth: mockOktaAuth });
+      await authContextState._applyAuthState(mockOktaAuth.authService);
     });
 
     act(() => {
@@ -70,7 +67,7 @@ describe("AuthContext useAuthContextState()", () => {
     let authContextState = getTestableCustomHook();
 
     await act(async () => {
-      await authContextState._reAuthorize({ auth: mockOktaAuth });
+      await authContextState._applyAuthState(mockOktaAuth.authService);
     });
 
     act(() => {
@@ -84,7 +81,7 @@ describe("AuthContext useAuthContextState()", () => {
     let authContextState = getTestableCustomHook();
 
     await act(async () => {
-      await authContextState._reAuthorize({ auth: mockOktaAuth });
+      await authContextState._applyAuthState(mockOktaAuth.authService);
     });
 
     act(() => {
@@ -98,7 +95,7 @@ describe("AuthContext useAuthContextState()", () => {
     let authContextState = getTestableCustomHook();
 
     await act(async () => {
-      await authContextState._reAuthorize({ auth: mockOktaAuth });
+      await authContextState._applyAuthState(mockOktaAuth.authService);
     });
 
     act(() => {
@@ -120,7 +117,7 @@ describe("AuthContext useAuthContextState()", () => {
     let authContextState = getTestableCustomHook();
     mockUserObj.groups = null;
     await act(async () => {
-      await authContextState._reAuthorize({ auth: mockOktaAuth });
+      await authContextState._applyAuthState(mockOktaAuth.authService);
     });
 
     act(() => {
@@ -134,10 +131,10 @@ describe("AuthContext useAuthContextState()", () => {
 
   it("login unsuccessful clears state accordingly", async () => {
     let authContextState = getTestableCustomHook();
-    mockIsAuthenticated = false;
+    mockAuthState.isAuthenticated = false;
 
     await act(async () => {
-      await authContextState._reAuthorize({ auth: mockOktaAuth });
+      await authContextState._applyAuthState(mockOktaAuth.authService);
     });
 
     act(() => {
@@ -155,7 +152,7 @@ describe("AuthContext useAuthContextState()", () => {
     let authContextState = getTestableCustomHook();
 
     await act(async () => {
-      await authContextState._reAuthorize({ auth: mockOktaAuth });
+      await authContextState._applyAuthState(mockOktaAuth.authService);
     });
 
     await act(async () => {
@@ -169,7 +166,7 @@ describe("AuthContext useAuthContextState()", () => {
     let authContextState = getTestableCustomHook();
 
     await act(async () => {
-      await authContextState._reAuthorize({ auth: mockOktaAuth });
+      await authContextState._applyAuthState(mockOktaAuth.authService);
     });
 
     await act(async () => {
@@ -183,7 +180,7 @@ describe("AuthContext useAuthContextState()", () => {
     let authContextState = getTestableCustomHook();
 
     await act(async () => {
-      await authContextState._reAuthorize({ auth: mockOktaAuth });
+      await authContextState._applyAuthState(mockOktaAuth.authService);
     });
 
     await act(async () => {
@@ -197,7 +194,7 @@ describe("AuthContext useAuthContextState()", () => {
     let authContextState = getTestableCustomHook();
 
     await act(async () => {
-      await authContextState._reAuthorize({ auth: mockOktaAuth });
+      await authContextState._applyAuthState(mockOktaAuth.authService);
     });
 
     await act(async () => {
@@ -210,5 +207,4 @@ describe("AuthContext useAuthContextState()", () => {
     expect(authContextState.groups).toHaveLength(0);
     expect(authContextState.userDisplayName).toBe("");
   });
-
 });

@@ -1,4 +1,8 @@
-import { AuthContext, AuthContextProvider, useAuthContextState } from "./AuthContext";
+import {
+  AuthContext,
+  AuthContextProvider,
+  useAuthContextState,
+} from "./AuthContext";
 import RouteWhenMemberOfAll from "./RouteWhenMemberOfAll";
 import RouteWhenMemberOfAny from "./RouteWhenMemberOfAny";
 import WhenMemberOfAll from "./WhenMemberOfAll";
@@ -24,24 +28,19 @@ import When from "./When";
 import RouteWhen from "./RouteWhen";
 import useWhen from "./useWhen";
 
-
 export {
   AuthContext,
   IAuthContext,
   AuthContextProvider,
   useAuthContextState,
   withAuthAwareness,
-
   //Groups
   WhenMemberOfAny,
   WhenMemberOfAll,
   RouteWhenMemberOfAny,
   RouteWhenMemberOfAll,
-
   IWhenMemberOfProps,
   IRouteWhenMemberOfProps,
-  
-  
   //Claims
   WhenHasClaim,
   WhenHasAnyClaims,
@@ -49,17 +48,15 @@ export {
   RouteWhenHasClaim,
   RouteWhenHasAnyClaims,
   RouteWhenHasAllClaims,
-
   IWhenHasClaimProps,
   IWhenHasClaimsProps,
   IRouteWhenHasClaimProps,
   IRouteWhenHasClaimsProps,
-
   //When
   When,
   RouteWhen,
   useWhen,
   IWhenProps,
   IRouteWhenProps,
-  IUseWhen
+  IUseWhen,
 };

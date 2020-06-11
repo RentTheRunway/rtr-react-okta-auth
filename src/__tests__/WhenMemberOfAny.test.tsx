@@ -20,7 +20,7 @@ describe("<WhenMemberOfAny />", () => {
       login: () => {},
       logout: (redirectUrl?: any) => new Promise(() => {}),
       auth: {},
-      _reAuthorize: (auth: any) => new Promise(() => {})
+      _applyAuthState: (auth: any) => new Promise(() => {}),
     };
   }
 
@@ -42,7 +42,7 @@ describe("<WhenMemberOfAny />", () => {
 
   it("renders content when matches a group", () => {
     const { queryByTestId } = renderForTargetGroups([
-      defaultAuthenticatedGroups[0]
+      defaultAuthenticatedGroups[0],
     ]);
     expect(queryByTestId(innerHtmlContent)).toBeTruthy();
   });

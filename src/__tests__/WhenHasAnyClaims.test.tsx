@@ -20,7 +20,7 @@ describe("<WhenHasAnyClaims />", () => {
       login: () => {},
       logout: (redirectUrl?: any) => new Promise(() => {}),
       auth: {},
-      _reAuthorize: (auth: any) => new Promise(() => {})
+      _applyAuthState: (auth: any) => new Promise(() => {}),
     };
   }
 
@@ -42,7 +42,7 @@ describe("<WhenHasAnyClaims />", () => {
 
   it("renders content when matches a claim", () => {
     const { queryByTestId } = renderForTargetClaims([
-      Object.keys(userClaims)[0]
+      Object.keys(userClaims)[0],
     ]);
     expect(queryByTestId(innerHtmlContent)).toBeTruthy();
   });

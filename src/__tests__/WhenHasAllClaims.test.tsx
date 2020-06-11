@@ -20,7 +20,7 @@ describe("<WhenHasAllClaims />", () => {
       login: () => {},
       logout: (redirectUrl?: any) => new Promise(() => {}),
       auth: {},
-      _reAuthorize: (auth: any) => new Promise(() => {})
+      _applyAuthState: (auth: any) => new Promise(() => {}),
     };
   }
 

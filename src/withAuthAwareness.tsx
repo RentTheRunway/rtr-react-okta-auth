@@ -1,38 +1,57 @@
 import React, { useState, useEffect, useContext } from "react";
-import { withOktaAuth } from "@okta/okta-react";
+import { withOktaAuth, useOktaAuth } from "@okta/okta-react";
 import { AuthContext } from "./AuthContext";
 import IAuthContext from "./models/IAuthContext";
 
-function withAuthUpdator(Component:any, onAuthKnown:()=>void, onAuthPending:()=>void) {
+function withAuthUpdator(
+  Component: any,
+  onAuthKnown: () => void,
+  onAuthPending: () => void
+) {
   return Updater;
 
   function Updater(props: any) {
+    const { authService, authState } = useOktaAuth();
+    const [authStateIsSetup, setAuthStateIsSetup] = useState<boolean>(false);
     const authContextState = useContext<IAuthContext>(AuthContext);
-    const [hasAuthenticatedState, setHasAuthenticatedState] = useState<boolean>(false);
-    const currentUrl = `${window.location.origin}${window.location.pathname}`;
-    const { redirectUri } = props.auth._config; 
-    const shouldRun = (currentUrl !== redirectUri);
-    useEffect(effect, [shouldRun]);
-  
-    if (!hasAuthenticatedState) return null;
-  
-    return <Component {...props} />;
+    const authPending = authState && authState.isPending;
+    const authKnown = authState && !authState.isPending;
 
-    function effect() {
-      if(shouldRun) {
-        checkAuthentication();
-      }
-    }
-    async function checkAuthentication() {      
+    useEffect(onAuthStateChange, [authKnown]);
+
+    if (authPending) {
       onAuthPending();
-      await authContextState._reAuthorize(props);      
-      setHasAuthenticatedState(true);
-      onAuthKnown();      
+      return null;
+    }
+
+    if (authStateIsSetup) {
+      onAuthKnown();
+      return <Component {...props} />;
+    }
+
+    return null;
+
+    function onAuthStateChange() {
+      const currentUrl = `${window.location.origin}${window.location.pathname}`;
+      const { redirectUri } = authService._config;
+      const shouldRun = currentUrl !== redirectUri;
+      if (authKnown && shouldRun) {
+        setupAuthAwareness();
+      }
+
+      async function setupAuthAwareness() {
+        await authContextState._applyAuthState(authService);
+        setAuthStateIsSetup(true);
+      }
     }
   }
 }
 
-function withAuthAwareness(Component:any, onAuthKnown:()=>void = () => {}, onAuthPending:()=>void = () => {}) {
+function withAuthAwareness(
+  Component: any,
+  onAuthKnown: () => void = () => {},
+  onAuthPending: () => void = () => {}
+) {
   return withOktaAuth(withAuthUpdator(Component, onAuthKnown, onAuthPending));
 }
 
