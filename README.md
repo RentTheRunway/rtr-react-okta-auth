@@ -30,11 +30,11 @@ Rent the Runway - rtr-react-okta-auth - Usage and Setup
 
 
 ## Install
-npm install @rent-the-runway/rtr-react-okta-auth @okta/okta-react
+`npm install @rent-the-runway/rtr-react-okta-auth @okta/okta-react@2.0.1`
 
 -or-
 
-yarn add @rent-the-runway/rtr-react-okta-auth @okta/okta-react
+`yarn add @rent-the-runway/rtr-react-okta-auth @okta/okta-react@2.0.1`
 
 
 ## What?
@@ -50,6 +50,8 @@ Specifically, access to Routes and JSX can be permitted to users
 * any other arbitrary condition such as application specific RBAC
 
 The library can be used for both JavaScript and TypeScript.
+
+More okta-react **version 2.0.1** documentation [here](https://www.npmjs.com/package/@okta/okta-react/v/2.0.1): 
 
 ## Scope
 This library is concerned with Okta's implicit flow. It's intent is to lock down UI fragments and react `<Route />`'s client side, i.e. within the browser.
@@ -80,7 +82,7 @@ This example code assumes two Okta groups namely, "standard" and "admin". It als
 import React, { FC, useContext } from "react";
 import { IEmptyProps } from "./models/IEmptyProps";
 import { BrowserRouter as Router, Route } from "react-router-dom";
-import { Security, ImplicitCallback } from "@okta/okta-react";
+import { Security, LoginCallback } from "@okta/okta-react";
 import Home from "./pages/Home";
 import Admin from "./pages/Admin";
 import Standard from "./pages/Standard";
@@ -173,7 +175,7 @@ const App: FC<IEmptyProps> = props => {
       <Router>
         <Security {...config}>
           <AuthApp {...props} />
-          <Route path={authCallbackUrl} component={ImplicitCallback} />
+          <Route path={authCallbackUrl} component={LoginCallback} />
         </Security>
       </Router>
     </AuthContextProvider>
@@ -184,7 +186,7 @@ const App: FC<IEmptyProps> = props => {
 A few  things happen above.
 1. The auth `state`/`api` is passed into the `Context API` `Provider`, so now an `API` is available to all components. This API is described below.
 2. `<Security />` is from `okta-react` and is necessary.
-3. The `<Route />` with the `ImplicitCallback` components is outside of the wrapped `AuthApp` component. This is **important** because this handles the Okta callback. It must be publicly available and not a secure `<Route />`
+3. The `<Route />` with the `LoginCallback` components is outside of the wrapped `AuthApp` component. This is **important** because this handles the Okta callback. It must be publicly available and not a secure `<Route />`
 
 
 ## Component Summary
@@ -360,7 +362,7 @@ const App: FC<IEmptyProps> = props => {
       <Router>
         <Security {...config}>
           <AuthApp {...props} />
-          <Route path={authCallbackUrl} component={ImplicitCallback} />
+          <Route path={authCallbackUrl} component={LoginCallback} />
         </Security>
       </Router>
     </AuthContextProvider>

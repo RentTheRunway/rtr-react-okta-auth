@@ -5,7 +5,7 @@ import {
   RouteWhen,
   IRouteWhenProps,
   IAuthContext,
-  AuthContext
+  AuthContext,
 } from "../index";
 import { cleanup, render } from "@testing-library/react";
 
@@ -30,7 +30,7 @@ describe("<RouteWhen />", () => {
       login: mockAuthContextLogin,
       logout: (redirectUrl?: any) => new Promise(() => {}),
       auth: {},
-      _reAuthorize: (auth: any) => new Promise(() => {})
+      _applyAuthState: (auth: any) => new Promise(() => {}),
     };
   }
 
@@ -42,16 +42,13 @@ describe("<RouteWhen />", () => {
     return <div data-testid={customUnauthorized}>Yo!</div>;
   };
 
-  function getJsx(
-    mockAuthContext: IAuthContext,
-    unauthorizedComponent?: any
-  ) {
+  function getJsx(mockAuthContext: IAuthContext, unauthorizedComponent?: any) {
     const history = createMemoryHistory();
     const props: IRouteWhenProps = {
       isTrue: mockIsTrue,
       path: "/",
       exact: true,
-      component: RouterComp
+      component: RouterComp,
     };
     if (unauthorizedComponent) {
       props.unauthorizedComponent = unauthorizedComponent;

@@ -6,6 +6,6 @@ interface IAuthContext {
     login: (redirectToUrl?: any) => void;
     logout: (redirectUrl?: any) => Promise<void>;
     auth: any;
-    _reAuthorize: (auth: any) => Promise<void>;
+    _applyAuthState: (auth: any) => Promise<void>;
 }
 export default IAuthContext;

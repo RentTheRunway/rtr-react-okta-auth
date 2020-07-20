@@ -5,7 +5,7 @@ import {
   RouteWhenMemberOfAll,
   IRouteWhenMemberOfProps,
   IAuthContext,
-  AuthContext
+  AuthContext,
 } from "../index";
 import { cleanup, render } from "@testing-library/react";
 import { any } from "prop-types";
@@ -31,7 +31,7 @@ describe("<RouteWhenMemberOfAll />", () => {
       login: mockAuthContextLogin,
       logout: (redirectUrl?: any) => new Promise(() => {}),
       auth: {},
-      _reAuthorize: (auth: any) => new Promise(() => {})
+      _applyAuthState: (auth: any) => new Promise(() => {}),
     };
   }
 
@@ -52,7 +52,7 @@ describe("<RouteWhenMemberOfAll />", () => {
       groups: targetGroups,
       path: "/",
       exact: true,
-      component: RouterComp
+      component: RouterComp,
     };
     if (unauthorizedComponent) {
       props.unauthorizedComponent = unauthorizedComponent;

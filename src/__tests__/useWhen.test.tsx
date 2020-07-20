@@ -2,7 +2,6 @@ import { cleanup, render } from "@testing-library/react";
 import React from "react";
 import { AuthContext, IAuthContext, IUseWhen, useWhen } from "..";
 
-
 describe("AuthContext useAuthContextState()", () => {
   afterEach(() => {
     cleanup();
@@ -20,7 +19,7 @@ describe("AuthContext useAuthContextState()", () => {
       login: (redirectUrl?: any) => new Promise(() => {}),
       logout: (redirectUrl?: any) => new Promise(() => {}),
       auth: {},
-      _reAuthorize: (auth: any) => new Promise(() => {})
+      _applyAuthState: (auth: any) => new Promise(() => {}),
     };
   }
 
@@ -55,5 +54,4 @@ describe("AuthContext useAuthContextState()", () => {
     expect(useWhenHook.when(mockWhenFn)).toBeFalsy();
     expect(mockWhenFn).toBeCalledTimes(0);
   });
-
 });
