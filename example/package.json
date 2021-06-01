@@ -8,6 +8,7 @@
     "build": "parcel build index.html"
   },
   "dependencies": {
+    "@okta/okta-react": "^5.1.2",
     "react-app-polyfill": "^1.0.0"
   },
   "alias": {

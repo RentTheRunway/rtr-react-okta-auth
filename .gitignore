@@ -62,3 +62,7 @@ typings/
 
 # cache
 .cache
+
+#/dist
+dist/
+
