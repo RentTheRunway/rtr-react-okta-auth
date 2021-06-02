@@ -1,8 +1,3 @@
-import {
-  AuthContext,
-  AuthContextProvider,
-  useAuthContextState,
-} from './AuthContext';
 import RouteWhenMemberOfAll from './RouteWhenMemberOfAll';
 import RouteWhenMemberOfAny from './RouteWhenMemberOfAny';
 import WhenMemberOf from './WhenMemberOf';
@@ -10,8 +5,6 @@ import WhenMemberOfAll from './WhenMemberOfAll';
 import WhenMemberOfAny from './WhenMemberOfAny';
 import IRouteWhenMemberOfProps from './models/IRouteWhenMemberOfProps';
 import IWhenMemberOfProps from './models/IWhenMemberOfProps';
-import IAuthContext from './models/IAuthContext';
-import withAuthAwareness from './withAuthAwareness';
 import IWhenHasClaimProps from './models/IWhenHasClaimProps';
 import IWhenHasClaimsProps from './models/IWhenHasClaimsProps';
 import WhenHasClaim from './WhenHasClaim';
@@ -34,14 +27,11 @@ import IRtrOktaAuth from './models/IRtrOktaAuth';
 import RouteWhenMemberOf from './RouteWhenMemberOf';
 
 export {
+  //Context
   RtrOktaAuth,
+  //API
   IRtrOktaAuth,
   useRtrOktaAuth,
-  AuthContext,
-  IAuthContext,
-  AuthContextProvider,
-  useAuthContextState,
-  withAuthAwareness,
   //Groups
   WhenMemberOf,
   WhenMemberOfAny,
