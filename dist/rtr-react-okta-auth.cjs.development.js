@@ -6,8 +6,8 @@ function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'defau
 
 var React = require('react');
 var React__default = _interopDefault(React);
-var reactRouterDom = require('react-router-dom');
 var oktaReact = require('@okta/okta-react');
+var reactRouterDom = require('react-router-dom');
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
   try {
@@ -966,6 +966,41 @@ function useAuthContextState() {
 var AuthContext = /*#__PURE__*/React.createContext({});
 var AuthContextProvider = AuthContext.Provider;
 
+var DefaultUnauthorized = function DefaultUnauthorized() {
+  return React__default.createElement("div", {
+    "data-testid": "default-unauthorized"
+  }, React__default.createElement("div", {
+    className: "rtr-react-okta-auth-unauthorized"
+  }, "Unauthorized"));
+};
+
+var UnAuthenticated = function UnAuthenticated() {
+  var authContext = React.useContext(AuthContext);
+  React.useEffect(function () {
+    if (!authContext.isAuthenticated) {
+      var path = "" + window.location.pathname + window.location.search;
+      authContext.login(path);
+    }
+  }, []);
+  return null;
+};
+
+var RouteWhenMemberOfAll = function RouteWhenMemberOfAll(props) {
+  var groups = props.groups,
+      rest = _objectWithoutPropertiesLoose(props, ["groups", "component", "unauthorizedComponent"]);
+
+  var isAuthenticated = oktaReact.useOktaAuth().authState.isAuthenticated;
+
+  var _useRtrOktaAuth = useRtrOktaAuth(),
+      isMemberOfAll = _useRtrOktaAuth.isMemberOfAll;
+
+  var intersects = isMemberOfAll(groups);
+  var compToRender = isAuthenticated ? intersects ? props.component : !!props.unauthorizedComponent ? props.unauthorizedComponent : DefaultUnauthorized : UnAuthenticated;
+  return React__default.createElement(reactRouterDom.Route, Object.assign({}, rest, {
+    component: compToRender
+  }));
+};
+
 function getIntersection(_arrayA, _arrayB) {
   var arrayA = _arrayA.map(function (e) {
     return e.toLowerCase().trim();
@@ -1007,38 +1042,6 @@ function hasAllProperties(obj, properties) {
   });
   return !!properties.length && matching.length === properties.length;
 }
-
-var DefaultUnauthorized = function DefaultUnauthorized() {
-  return React__default.createElement("div", {
-    "data-testid": "default-unauthorized"
-  }, React__default.createElement("div", {
-    className: "rtr-react-okta-auth-unauthorized"
-  }, "Unauthorized"));
-};
-
-var UnAuthenticated = function UnAuthenticated() {
-  var authContext = React.useContext(AuthContext);
-  React.useEffect(function () {
-    if (!authContext.isAuthenticated) {
-      var path = "" + window.location.pathname + window.location.search;
-      authContext.login(path);
-    }
-  }, []);
-  return null;
-};
-
-var RouteWhenMemberOfAll = function RouteWhenMemberOfAll(props) {
-  var groups = props.groups,
-      rest = _objectWithoutPropertiesLoose(props, ["groups", "component", "unauthorizedComponent"]);
-
-  var authContext = React.useContext(AuthContext);
-  var isAuthenticated = authContext.isAuthenticated;
-  var intersects = hasFullIntersection(groups, authContext.groups);
-  var compToRender = isAuthenticated ? intersects ? props.component : !!props.unauthorizedComponent ? props.unauthorizedComponent : DefaultUnauthorized : UnAuthenticated;
-  return React__default.createElement(reactRouterDom.Route, Object.assign({}, rest, {
-    component: compToRender
-  }));
-};
 
 var RouteWhenMemberOfAny = function RouteWhenMemberOfAny(props) {
   var groups = props.groups,

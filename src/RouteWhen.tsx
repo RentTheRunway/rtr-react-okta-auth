@@ -1,24 +1,30 @@
-import React, { useContext, FC } from "react";
-import { Route } from "react-router-dom";
-import { AuthContext } from "./AuthContext";
-import IRouteWhen from "./models/IRouteWhenProps";
-import DefaultUnauthorized from "./DefaultUnauthorized";
-import UnAuthenticated from "./UnAuthenticated";
-import IAuthContext from "./models/IAuthContext";
+import React, { FC } from 'react';
+import { Route } from 'react-router-dom';
+import DefaultUnAuthenticated from './DefaultUnAuthenticated';
+import DefaultUnauthorized from './DefaultUnauthorized';
+import IRouteWhen from './models/IRouteWhenProps';
+import useRtrOktaAuth from './useRtrOktaAuth';
 
 const RouteWhen: FC<IRouteWhen> = props => {
-    const { component, unauthorizedComponent, isTrue, ...rest } = props;
-    const authContext = useContext<IAuthContext>(AuthContext);
-    const isAuthenticated = authContext.isAuthenticated;
-    const hasAccess = isTrue();
-    const compToRender = isAuthenticated
-      ? hasAccess
-        ? component
-        : !!unauthorizedComponent
-        ? unauthorizedComponent
-        : DefaultUnauthorized
-      : UnAuthenticated;
-    return <Route {...rest} component={compToRender} />;
-  };
+  const {
+    component,
+    unauthenticatedComponent,
+    unauthorizedComponent,
+    isTrue,
+    ...rest
+  } = props;
+  const { isAuthenticated } = useRtrOktaAuth().authCtx.authState;
+  const hasAccess = isTrue();
+  const compToRender = isAuthenticated
+    ? hasAccess
+      ? component
+      : !!unauthorizedComponent
+      ? unauthorizedComponent
+      : DefaultUnauthorized
+    : !!unauthenticatedComponent
+    ? unauthenticatedComponent
+    : DefaultUnAuthenticated;
+  return <Route component={compToRender} {...rest} />;
+};
 
-  export default RouteWhen;
+export default RouteWhen;

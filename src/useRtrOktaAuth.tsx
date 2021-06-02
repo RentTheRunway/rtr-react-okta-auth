@@ -9,18 +9,19 @@ import IRtrOktaAuth from './models/IRtrOktaAuth';
 import { RtrOktaAuthContext } from './RtrOktaAuthContext';
 
 export default function useRtrOktaAuth(): IRtrOktaAuth {
-  const { user, userGroups, fetchingUserInfo } = React.useContext(
+  const { user, userGroups, fetchingUserInfo, authCtx } = React.useContext(
     RtrOktaAuthContext
   );
 
   return {
     user,
     fetchingUserInfo,
+    authCtx,
     isMemberOf,
     isMemberOfAny,
     isMemberOfAll,
     hasClaim,
-    hasAnyClaim,
+    hasAnyClaims,
     hasAllClaims,
   };
 
@@ -44,7 +45,7 @@ export default function useRtrOktaAuth(): IRtrOktaAuth {
     return hasAnyProperty(user, [claim]);
   }
 
-  function hasAnyClaim(claims: string[]) {
+  function hasAnyClaims(claims: string[]) {
     if (!user) return false;
     return hasAnyProperty(user, claims);
   }

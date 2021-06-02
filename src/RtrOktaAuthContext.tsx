@@ -9,6 +9,7 @@ interface IRtrOktaAuthUserCtx {
   user: any | null;
   userGroups: string[];
   fetchingUserInfo: boolean;
+  authCtx: IOktaContext;
 }
 export function useRtrOktaUserCtx({ authCtx }: Props): IRtrOktaAuthUserCtx {
   const [user, setUser] = React.useState<any>(null);
@@ -22,6 +23,7 @@ export function useRtrOktaUserCtx({ authCtx }: Props): IRtrOktaAuthUserCtx {
     user,
     userGroups,
     fetchingUserInfo,
+    authCtx,
   };
 
   function applyAuthState() {
