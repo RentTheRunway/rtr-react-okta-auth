@@ -1,13 +1,11 @@
 import * as React from 'react';
 import NavBar from '../components/NavBar';
 
-interface Props {}
-
-const Home = (props: Props) => {
+const Home = () => {
   return (
     <>
       <NavBar />
-      <div className="container"></div>
+      <div className="container">yo</div>
     </>
   );
 };

@@ -1264,6 +1264,139 @@ function useWhen() {
   }
 }
 
+function useRtrOktaUserCtx(_ref) {
+  var authCtx = _ref.authCtx;
+
+  var _React$useState = React.useState(null),
+      user = _React$useState[0],
+      setUser = _React$useState[1];
+
+  var _React$useState2 = React.useState(null),
+      fetchingUserInfo = _React$useState2[0],
+      setFetchingUserInfo = _React$useState2[1];
+
+  var _React$useState3 = React.useState([]),
+      userGroups = _React$useState3[0],
+      setUserGroups = _React$useState3[1];
+
+  var authState = authCtx.authState,
+      oktaAuth = authCtx.oktaAuth;
+  React.useEffect(applyAuthState, [authState.isAuthenticated]);
+  return {
+    user: user,
+    userGroups: userGroups,
+    fetchingUserInfo: fetchingUserInfo
+  };
+
+  function applyAuthState() {
+    setAuthState();
+
+    function setAuthState() {
+      return _setAuthState.apply(this, arguments);
+    }
+
+    function _setAuthState() {
+      _setAuthState = _asyncToGenerator( /*#__PURE__*/runtime_1.mark(function _callee() {
+        var user;
+        return runtime_1.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                if (authState.isAuthenticated) {
+                  _context.next = 3;
+                  break;
+                }
+
+                setUser(null);
+                return _context.abrupt("return");
+
+              case 3:
+                setFetchingUserInfo(true);
+                _context.next = 6;
+                return oktaAuth.token.getUserInfo();
+
+              case 6:
+                user = _context.sent;
+                setUser(user);
+                setUserGroups(user.groups || []);
+                setFetchingUserInfo(false);
+
+              case 10:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee);
+      }));
+      return _setAuthState.apply(this, arguments);
+    }
+  }
+}
+var RtrOktaAuthContext = /*#__PURE__*/React.createContext({
+  user: null,
+  userGroups: [],
+  fetchingUserInfo: false
+});
+
+var RtrOktaAuth = function RtrOktaAuth(_ref) {
+  var authCtx = _ref.authCtx,
+      children = _ref.children;
+  var rtrOktaUserCtx = useRtrOktaUserCtx({
+    authCtx: authCtx
+  });
+  return React.createElement(RtrOktaAuthContext.Provider, {
+    value: rtrOktaUserCtx
+  }, children);
+};
+
+function useRtrOktaAuth() {
+  var _React$useContext = React.useContext(RtrOktaAuthContext),
+      user = _React$useContext.user,
+      userGroups = _React$useContext.userGroups,
+      fetchingUserInfo = _React$useContext.fetchingUserInfo;
+
+  return {
+    user: user,
+    fetchingUserInfo: fetchingUserInfo,
+    isMemberOf: isMemberOf,
+    isMemberOfAny: isMemberOfAny,
+    isMemberOfAll: isMemberOfAll,
+    hasClaim: hasClaim,
+    hasAnyClaim: hasAnyClaim,
+    hasAllClaims: hasAllClaims
+  };
+
+  function isMemberOf(group) {
+    if (!user) return false;
+    return hasIntersection([group], userGroups);
+  }
+
+  function isMemberOfAny(groups) {
+    if (!user) return false;
+    return hasIntersection(groups, userGroups);
+  }
+
+  function isMemberOfAll(groups) {
+    if (!user) return false;
+    return hasFullIntersection(groups, userGroups);
+  }
+
+  function hasClaim(claim) {
+    if (!user) return false;
+    return hasAnyProperty(user, [claim]);
+  }
+
+  function hasAnyClaim(claims) {
+    if (!user) return false;
+    return hasAnyProperty(user, claims);
+  }
+
+  function hasAllClaims(claims) {
+    if (!user) return false;
+    return hasAllProperties(user, claims);
+  }
+}
+
 exports.AuthContext = AuthContext;
 exports.AuthContextProvider = AuthContextProvider;
 exports.RouteWhen = RouteWhen;
@@ -1272,6 +1405,7 @@ exports.RouteWhenHasAnyClaims = RouteWhenHasAnyClaims;
 exports.RouteWhenHasClaim = RouteWhenHasClaim;
 exports.RouteWhenMemberOfAll = RouteWhenMemberOfAll;
 exports.RouteWhenMemberOfAny = RouteWhenMemberOfAny;
+exports.RtrOktaAuth = RtrOktaAuth;
 exports.When = When;
 exports.WhenHasAllClaims = WhenHasAllClaims;
 exports.WhenHasAnyClaims = WhenHasAnyClaims;
@@ -1279,6 +1413,7 @@ exports.WhenHasClaim = WhenHasClaim;
 exports.WhenMemberOfAll = WhenMemberOfAll;
 exports.WhenMemberOfAny = WhenMemberOfAny;
 exports.useAuthContextState = useAuthContextState;
+exports.useRtrOktaAuth = useRtrOktaAuth;
 exports.useWhen = useWhen;
 exports.withAuthAwareness = withAuthAwareness;
 //# sourceMappingURL=rtr-react-okta-auth.cjs.development.js.map

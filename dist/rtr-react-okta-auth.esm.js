@@ -1,4 +1,4 @@
-import React, { useState, createContext, useContext, useEffect } from 'react';
+import React__default, { useState, createContext, useContext, useEffect, createElement } from 'react';
 import { Route } from 'react-router-dom';
 import { withOktaAuth, useOktaAuth } from '@okta/okta-react';
 
@@ -1002,9 +1002,9 @@ function hasAllProperties(obj, properties) {
 }
 
 var DefaultUnauthorized = function DefaultUnauthorized() {
-  return React.createElement("div", {
+  return React__default.createElement("div", {
     "data-testid": "default-unauthorized"
-  }, React.createElement("div", {
+  }, React__default.createElement("div", {
     className: "rtr-react-okta-auth-unauthorized"
   }, "Unauthorized"));
 };
@@ -1028,7 +1028,7 @@ var RouteWhenMemberOfAll = function RouteWhenMemberOfAll(props) {
   var isAuthenticated = authContext.isAuthenticated;
   var intersects = hasFullIntersection(groups, authContext.groups);
   var compToRender = isAuthenticated ? intersects ? props.component : !!props.unauthorizedComponent ? props.unauthorizedComponent : DefaultUnauthorized : UnAuthenticated;
-  return React.createElement(Route, Object.assign({}, rest, {
+  return React__default.createElement(Route, Object.assign({}, rest, {
     component: compToRender
   }));
 };
@@ -1043,7 +1043,7 @@ var RouteWhenMemberOfAny = function RouteWhenMemberOfAny(props) {
   var isAuthenticated = authContext.isAuthenticated;
   var intersects = hasIntersection(authContext.groups, groups);
   var compToRender = isAuthenticated ? intersects ? component : !!unauthorizedComponent ? unauthorizedComponent : DefaultUnauthorized : UnAuthenticated;
-  return React.createElement(Route, Object.assign({}, rest, {
+  return React__default.createElement(Route, Object.assign({}, rest, {
     component: compToRender
   }));
 };
@@ -1096,7 +1096,7 @@ function withAuthUpdator(Component, onAuthKnown, onAuthPending) {
 
     if (authStateIsSetup) {
       onAuthKnown();
-      return React.createElement(Component, Object.assign({}, props));
+      return React__default.createElement(Component, Object.assign({}, props));
     }
 
     return null;
@@ -1197,13 +1197,13 @@ var RouteWhenHasAnyClaims = function RouteWhenHasAnyClaims(props) {
   var isAuthenticated = authContext.isAuthenticated;
   var intersects = hasAnyProperty(authContext.user, claims);
   var compToRender = isAuthenticated ? intersects ? component : !!unauthorizedComponent ? unauthorizedComponent : DefaultUnauthorized : UnAuthenticated;
-  return React.createElement(Route, Object.assign({}, rest, {
+  return React__default.createElement(Route, Object.assign({}, rest, {
     component: compToRender
   }));
 };
 
 var RouteWhenHasClaim = function RouteWhenHasClaim(props) {
-  return React.createElement(RouteWhenHasAnyClaims, Object.assign({}, props, {
+  return React__default.createElement(RouteWhenHasAnyClaims, Object.assign({}, props, {
     claims: [props.claim]
   }));
 };
@@ -1218,7 +1218,7 @@ var RouteWhenHasAllClaims = function RouteWhenHasAllClaims(props) {
   var isAuthenticated = authContext.isAuthenticated;
   var intersects = hasAllProperties(authContext.user, claims);
   var compToRender = isAuthenticated ? intersects ? component : !!unauthorizedComponent ? unauthorizedComponent : DefaultUnauthorized : UnAuthenticated;
-  return React.createElement(Route, Object.assign({}, rest, {
+  return React__default.createElement(Route, Object.assign({}, rest, {
     component: compToRender
   }));
 };
@@ -1240,7 +1240,7 @@ var RouteWhen = function RouteWhen(props) {
   var isAuthenticated = authContext.isAuthenticated;
   var hasAccess = isTrue();
   var compToRender = isAuthenticated ? hasAccess ? component : !!unauthorizedComponent ? unauthorizedComponent : DefaultUnauthorized : UnAuthenticated;
-  return React.createElement(Route, Object.assign({}, rest, {
+  return React__default.createElement(Route, Object.assign({}, rest, {
     component: compToRender
   }));
 };
@@ -1257,5 +1257,138 @@ function useWhen() {
   }
 }
 
-export { AuthContext, AuthContextProvider, RouteWhen, RouteWhenHasAllClaims, RouteWhenHasAnyClaims, RouteWhenHasClaim, RouteWhenMemberOfAll, RouteWhenMemberOfAny, When, WhenHasAllClaims, WhenHasAnyClaims, WhenHasClaim, WhenMemberOfAll, WhenMemberOfAny, useAuthContextState, useWhen, withAuthAwareness };
+function useRtrOktaUserCtx(_ref) {
+  var authCtx = _ref.authCtx;
+
+  var _React$useState = useState(null),
+      user = _React$useState[0],
+      setUser = _React$useState[1];
+
+  var _React$useState2 = useState(null),
+      fetchingUserInfo = _React$useState2[0],
+      setFetchingUserInfo = _React$useState2[1];
+
+  var _React$useState3 = useState([]),
+      userGroups = _React$useState3[0],
+      setUserGroups = _React$useState3[1];
+
+  var authState = authCtx.authState,
+      oktaAuth = authCtx.oktaAuth;
+  useEffect(applyAuthState, [authState.isAuthenticated]);
+  return {
+    user: user,
+    userGroups: userGroups,
+    fetchingUserInfo: fetchingUserInfo
+  };
+
+  function applyAuthState() {
+    setAuthState();
+
+    function setAuthState() {
+      return _setAuthState.apply(this, arguments);
+    }
+
+    function _setAuthState() {
+      _setAuthState = _asyncToGenerator( /*#__PURE__*/runtime_1.mark(function _callee() {
+        var user;
+        return runtime_1.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                if (authState.isAuthenticated) {
+                  _context.next = 3;
+                  break;
+                }
+
+                setUser(null);
+                return _context.abrupt("return");
+
+              case 3:
+                setFetchingUserInfo(true);
+                _context.next = 6;
+                return oktaAuth.token.getUserInfo();
+
+              case 6:
+                user = _context.sent;
+                setUser(user);
+                setUserGroups(user.groups || []);
+                setFetchingUserInfo(false);
+
+              case 10:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee);
+      }));
+      return _setAuthState.apply(this, arguments);
+    }
+  }
+}
+var RtrOktaAuthContext = /*#__PURE__*/createContext({
+  user: null,
+  userGroups: [],
+  fetchingUserInfo: false
+});
+
+var RtrOktaAuth = function RtrOktaAuth(_ref) {
+  var authCtx = _ref.authCtx,
+      children = _ref.children;
+  var rtrOktaUserCtx = useRtrOktaUserCtx({
+    authCtx: authCtx
+  });
+  return createElement(RtrOktaAuthContext.Provider, {
+    value: rtrOktaUserCtx
+  }, children);
+};
+
+function useRtrOktaAuth() {
+  var _React$useContext = useContext(RtrOktaAuthContext),
+      user = _React$useContext.user,
+      userGroups = _React$useContext.userGroups,
+      fetchingUserInfo = _React$useContext.fetchingUserInfo;
+
+  return {
+    user: user,
+    fetchingUserInfo: fetchingUserInfo,
+    isMemberOf: isMemberOf,
+    isMemberOfAny: isMemberOfAny,
+    isMemberOfAll: isMemberOfAll,
+    hasClaim: hasClaim,
+    hasAnyClaim: hasAnyClaim,
+    hasAllClaims: hasAllClaims
+  };
+
+  function isMemberOf(group) {
+    if (!user) return false;
+    return hasIntersection([group], userGroups);
+  }
+
+  function isMemberOfAny(groups) {
+    if (!user) return false;
+    return hasIntersection(groups, userGroups);
+  }
+
+  function isMemberOfAll(groups) {
+    if (!user) return false;
+    return hasFullIntersection(groups, userGroups);
+  }
+
+  function hasClaim(claim) {
+    if (!user) return false;
+    return hasAnyProperty(user, [claim]);
+  }
+
+  function hasAnyClaim(claims) {
+    if (!user) return false;
+    return hasAnyProperty(user, claims);
+  }
+
+  function hasAllClaims(claims) {
+    if (!user) return false;
+    return hasAllProperties(user, claims);
+  }
+}
+
+export { AuthContext, AuthContextProvider, RouteWhen, RouteWhenHasAllClaims, RouteWhenHasAnyClaims, RouteWhenHasClaim, RouteWhenMemberOfAll, RouteWhenMemberOfAny, RtrOktaAuth, When, WhenHasAllClaims, WhenHasAnyClaims, WhenHasClaim, WhenMemberOfAll, WhenMemberOfAny, useAuthContextState, useRtrOktaAuth, useWhen, withAuthAwareness };
 //# sourceMappingURL=rtr-react-okta-auth.esm.js.map

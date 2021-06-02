@@ -23,4 +23,7 @@ import IUseWhen from './models/IUseWhen';
 import When from './When';
 import RouteWhen from './RouteWhen';
 import useWhen from './useWhen';
-export { AuthContext, IAuthContext, AuthContextProvider, useAuthContextState, withAuthAwareness, WhenMemberOfAny, WhenMemberOfAll, RouteWhenMemberOfAny, RouteWhenMemberOfAll, IWhenMemberOfProps, IRouteWhenMemberOfProps, WhenHasClaim, WhenHasAnyClaims, WhenHasAllClaims, RouteWhenHasClaim, RouteWhenHasAnyClaims, RouteWhenHasAllClaims, IWhenHasClaimProps, IWhenHasClaimsProps, IRouteWhenHasClaimProps, IRouteWhenHasClaimsProps, When, RouteWhen, useWhen, IWhenProps, IRouteWhenProps, IUseWhen, };
+import RtrOktaAuth from './RtrOktaAuth';
+import useRtrOktaAuth from './useRtrOktaAuth';
+import IRtrOktaAuth from './models/IRtrOktaAuth';
+export { RtrOktaAuth, IRtrOktaAuth, useRtrOktaAuth, AuthContext, IAuthContext, AuthContextProvider, useAuthContextState, withAuthAwareness, WhenMemberOfAny, WhenMemberOfAll, RouteWhenMemberOfAny, RouteWhenMemberOfAll, IWhenMemberOfProps, IRouteWhenMemberOfProps, WhenHasClaim, WhenHasAnyClaims, WhenHasAllClaims, RouteWhenHasClaim, RouteWhenHasAnyClaims, RouteWhenHasAllClaims, IWhenHasClaimProps, IWhenHasClaimsProps, IRouteWhenHasClaimProps, IRouteWhenHasClaimsProps, When, RouteWhen, useWhen, IWhenProps, IRouteWhenProps, IUseWhen, };

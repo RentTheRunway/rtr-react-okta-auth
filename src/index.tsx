@@ -27,8 +27,14 @@ import IUseWhen from './models/IUseWhen';
 import When from './When';
 import RouteWhen from './RouteWhen';
 import useWhen from './useWhen';
+import RtrOktaAuth from './RtrOktaAuth';
+import useRtrOktaAuth from './useRtrOktaAuth';
+import IRtrOktaAuth from './models/IRtrOktaAuth';
 
 export {
+  RtrOktaAuth,
+  IRtrOktaAuth,
+  useRtrOktaAuth,
   AuthContext,
   IAuthContext,
   AuthContextProvider,

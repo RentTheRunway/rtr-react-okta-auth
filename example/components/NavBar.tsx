@@ -1,12 +1,18 @@
-import * as React from 'react';
 import { useOktaAuth } from '@okta/okta-react';
+import * as React from 'react';
+import { useRtrOktaAuth } from '../../src';
 
 interface Props {}
 
 const NavBar = (props: Props) => {
   const { authState, oktaAuth } = useOktaAuth();
-
   const { isAuthenticated } = authState;
+  const { user, fetchingUserInfo } = useRtrOktaAuth();
+  const displayName = fetchingUserInfo
+    ? '...'
+    : !!user
+    ? `${user.given_name} ${user.family_name}`
+    : '';
 
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
@@ -38,7 +44,7 @@ const NavBar = (props: Props) => {
           <div>
             {isAuthenticated && (
               <>
-                <span className="text-white mr-4">????</span>
+                <span className="text-white mr-4">{displayName}</span>
                 <button
                   className="p-0 text-white btn btn-link"
                   onClick={logout}
