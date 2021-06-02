@@ -24,6 +24,33 @@ function BlogLinks() {
   );
 }
 
+function DocLinks() {
+  return (
+    <div className="alert alert-primary">
+      <p>
+        Click{' '}
+        <a
+          href="https://github.com/RentTheRunway/rtr-react-okta-auth#component-summary"
+          target="_blank"
+        >
+          here
+        </a>{' '}
+        for the full list of components
+      </p>
+      <p>
+        Click{' '}
+        <a
+          href="https://github.com/RentTheRunway/rtr-react-okta-auth#component-summary"
+          target="_blank"
+        >
+          here
+        </a>{' '}
+        for the API
+      </p>
+    </div>
+  );
+}
+
 const Home = () => {
   const { user, fetchingUserInfo } = useRtrOktaAuth();
   const displayName = getDisplayName(user, fetchingUserInfo);
@@ -33,7 +60,41 @@ const Home = () => {
   return (
     <>
       <NavBar />
+
       <div className="container">
+        <div className="alert alert-primary my-4">
+          <p>
+            This app <strong>requires</strong> that an Okta instance be setup
+            with the following:
+          </p>
+          <p>
+            <strong>User 1</strong> with both groups: <code>blog_read</code> and{' '}
+            <code>blog_admin</code>
+          </p>
+          <p>
+            <strong>User 2</strong> with group: <code>blog_read</code>
+          </p>
+          <p>
+            <strong>Optionally</strong> for the claims aspect of it
+          </p>
+          <p>
+            <strong>User 1</strong> will have both claims: <code>CanDoA</code>{' '}
+            and <code>CanDoB</code>
+          </p>
+          <p>
+            <strong>User 2</strong> will have claim: <code>CanDoA</code>
+          </p>
+          To setup the Okta instance, simply follow these{' '}
+          <a
+            href="https://github.com/RentTheRunway/rtr-react-okta-auth#okta-setup-summary"
+            target="_blank"
+          >
+            instructions
+          </a>
+        </div>
+
+        <DocLinks />
+
         <h1>User Details</h1>
         <table className="table w-auto">
           <thead>
@@ -63,6 +124,8 @@ const Home = () => {
             </tr>
           </tbody>
         </table>
+
+        <hr className="my-4" />
 
         <h1>Demo App</h1>
 
@@ -218,6 +281,10 @@ const Home = () => {
             </p>
           </div>
         </div>
+
+        <hr className="my-4" />
+
+        <DocLinks />
       </div>
     </>
   );
