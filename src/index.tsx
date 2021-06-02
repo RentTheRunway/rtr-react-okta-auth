@@ -3,6 +3,9 @@ import RouteWhenMemberOfAny from './RouteWhenMemberOfAny';
 import WhenMemberOf from './WhenMemberOf';
 import WhenMemberOfAll from './WhenMemberOfAll';
 import WhenMemberOfAny from './WhenMemberOfAny';
+import WhenNotMemberOf from './WhenNotMemberOf';
+import WhenNotMemberOfAll from './WhenNotMemberOfAll';
+import WhenNotMemberOfAny from './WhenNotMemberOfAny';
 import IRouteWhenMemberOfProps from './models/IRouteWhenMemberOfProps';
 import IWhenMemberOfProps from './models/IWhenMemberOfProps';
 import IWhenHasClaimProps from './models/IWhenHasClaimProps';
@@ -10,6 +13,9 @@ import IWhenHasClaimsProps from './models/IWhenHasClaimsProps';
 import WhenHasClaim from './WhenHasClaim';
 import WhenHasAnyClaims from './WhenHasAnyClaims';
 import WhenHasAllClaims from './WhenHasAllClaims';
+import WhenNotHasClaim from './WhenNotHasClaim';
+import WhenNotHasAnyClaims from './WhenNotHasAnyClaims';
+import WhenNotHasAllClaims from './WhenNotHasAllClaims';
 import RouteWhenHasClaim from './RouteWhenHasClaim';
 import RouteWhenHasAnyClaims from './RouteWhenHasAnyClaims';
 import RouteWhenHasAllClaims from './RouteWhenHasAllClaims';
@@ -36,6 +42,9 @@ export {
   WhenMemberOf,
   WhenMemberOfAny,
   WhenMemberOfAll,
+  WhenNotMemberOf,
+  WhenNotMemberOfAny,
+  WhenNotMemberOfAll,
   RouteWhenMemberOf,
   RouteWhenMemberOfAny,
   RouteWhenMemberOfAll,
@@ -46,6 +55,9 @@ export {
   WhenHasAnyClaims,
   WhenHasAllClaims,
   RouteWhenHasClaim,
+  WhenNotHasClaim,
+  WhenNotHasAnyClaims,
+  WhenNotHasAllClaims,
   RouteWhenHasAnyClaims,
   RouteWhenHasAllClaims,
   IWhenHasClaimProps,
