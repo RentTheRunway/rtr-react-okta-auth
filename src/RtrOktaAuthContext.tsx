@@ -46,4 +46,5 @@ export const RtrOktaAuthContext = React.createContext<IRtrOktaAuthUserCtx>({
   user: null,
   userGroups: [],
   fetchingUserInfo: false,
+  authCtx: {} as IOktaContext,
 });
