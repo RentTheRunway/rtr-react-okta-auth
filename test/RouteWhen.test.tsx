@@ -1,32 +1,45 @@
+import { IOktaContext } from '@okta/okta-react/bundles/types/OktaContext';
+import {
+  act,
+  cleanup,
+  render,
+  RenderResult,
+  screen,
+} from '@testing-library/react';
+import { createMemoryHistory } from 'history';
 import React from 'react';
 import { Router } from 'react-router-dom';
-import { createMemoryHistory } from 'history';
-import { RouteWhen, IRouteWhenProps, IAuthContext, AuthContext } from '../src';
-import { cleanup, render } from '@testing-library/react';
+import { IRouteWhenProps, RouteWhen, RtrOktaAuth } from '../src';
 
 describe('<RouteWhen />', () => {
+  const innerHtmlContent = 'innerHtmlContent';
+  const defaultUnauthenticated = 'default-unauthenticated';
+  const customUnauthenticated = 'custom-unauthenticated';
+  const defaultUnauthorized = 'default-unauthorized';
+  const customUnauthorized = 'custom-unauthorized';
+  let mockIsAuthenticated = true;
+  let mockUser = { sub: '', groups: [] };
+  const mockIsTrue = jest.fn();
+
   afterEach(() => {
     cleanup();
     jest.resetAllMocks();
+    mockIsAuthenticated = true;
   });
 
-  const innerHtmlContent = 'innerHtmlContent';
-  const defaultUnauthorized = 'default-unauthorized';
-  const customUnauthorized = 'custom-unauthorized';
-  const mockAuthContextLogin = jest.fn();
-  const mockIsTrue = jest.fn();
-
-  function getMockAuthContext(): IAuthContext {
-    return {
-      groups: [],
-      user: {},
-      userDisplayName: '',
-      isAuthenticated: true,
-      login: mockAuthContextLogin,
-      logout: (redirectUrl?: any) => new Promise(() => {}),
-      auth: {},
-      _applyAuthState: (auth: any) => new Promise(() => {}),
+  function getMockUseOktaAuth(): IOktaContext {
+    const ctx = {
+      _onAuthRequired: jest.fn(),
+      authState: {
+        isAuthenticated: mockIsAuthenticated,
+      },
+      oktaAuth: {
+        token: {
+          getUserInfo: async () => mockUser,
+        },
+      },
     };
+    return (ctx as unknown) as IOktaContext;
   }
 
   const RouterComp = () => {
@@ -37,7 +50,15 @@ describe('<RouteWhen />', () => {
     return <div data-testid={customUnauthorized}>Yo!</div>;
   };
 
-  function getJsx(mockAuthContext: IAuthContext, unauthorizedComponent?: any) {
+  const RouterCompUnauthenticated = () => {
+    return <div data-testid={customUnauthenticated}>Yo!</div>;
+  };
+
+  function getJsx(
+    mockAuthContext: any,
+    unauthorizedComponent?: any,
+    unauthenticatedComponent?: any
+  ) {
     const history = createMemoryHistory();
     const props: IRouteWhenProps = {
       isTrue: mockIsTrue,
@@ -48,50 +69,76 @@ describe('<RouteWhen />', () => {
     if (unauthorizedComponent) {
       props.unauthorizedComponent = unauthorizedComponent;
     }
+    if (unauthenticatedComponent) {
+      props.unauthenticatedComponent = unauthenticatedComponent;
+    }
     return (
       <Router history={history}>
-        <AuthContext.Provider value={mockAuthContext}>
+        <RtrOktaAuth authCtx={mockAuthContext}>
           <RouteWhen {...props} />
-        </AuthContext.Provider>
+        </RtrOktaAuth>
       </Router>
     );
   }
 
-  function renderWhen() {
-    const mockAuthContext = getMockAuthContext();
+  async function renderWhen() {
+    const mockAuthContext = getMockUseOktaAuth();
     const jsx = getJsx(mockAuthContext);
-    return render(jsx);
+    let comp: RenderResult = {} as RenderResult;
+    await act(async () => {
+      comp = render(jsx);
+    });
+    return comp;
   }
 
-  it('renders component when authenticated and isTrue()', () => {
-    mockIsTrue.mockReturnValueOnce(true);
-    const { queryByTestId } = renderWhen();
+  it('renders component when authenticated and isTrue()', async () => {
+    mockIsTrue.mockReturnValue(true);
+    const { queryByTestId } = await renderWhen();
     expect(queryByTestId(innerHtmlContent)).toBeTruthy();
   });
 
-  it('NOT renders component when NOT isTrue()', () => {
-    mockIsTrue.mockReturnValueOnce(false);
-    const { queryByTestId } = renderWhen();
+  it('NOT renders component (renders default unauthorized) when authenticated but NOT isTrue()', async () => {
+    mockIsTrue.mockReturnValue(false);
+    const { queryByTestId } = await renderWhen();
     expect(queryByTestId(innerHtmlContent)).toBeFalsy();
     expect(queryByTestId(defaultUnauthorized)).toBeTruthy();
   });
 
-  it('renders specified Unauthorized component when not auhtorized', () => {
-    mockIsTrue.mockReturnValueOnce(false);
-    const mockAuthContext = getMockAuthContext();
-    mockAuthContext.isAuthenticated = true;
-    const jsx = getJsx(mockAuthContext, RouterCompUnauthorized);
-    const { queryByTestId } = render(jsx);
+  it('NOT renders component (renders default unauthenticated) when NOT authenticated but isTrue()', async () => {
+    mockIsTrue.mockReturnValue(true);
+    mockIsAuthenticated = false;
+    const { queryByTestId } = await renderWhen();
     expect(queryByTestId(innerHtmlContent)).toBeFalsy();
-    expect(queryByTestId(defaultUnauthorized)).toBeFalsy();
-    expect(queryByTestId(customUnauthorized)).toBeTruthy();
+    expect(queryByTestId(defaultUnauthenticated)).toBeTruthy();
   });
 
-  it('redircts to Okta login when not authenticated', () => {
-    const mockAuthContext = getMockAuthContext();
-    mockAuthContext.isAuthenticated = false;
-    const jsx = getJsx(mockAuthContext);
-    render(jsx);
-    expect(mockAuthContextLogin).toBeCalledTimes(1);
+  it('renders specified unauthorized component when not auhtorized', async () => {
+    mockIsTrue.mockReturnValueOnce(false);
+    mockIsAuthenticated = true;
+    const mockAuthContext = getMockUseOktaAuth();
+    const jsx = getJsx(mockAuthContext, RouterCompUnauthorized);
+    await act(async () => {
+      render(jsx);
+    });
+    expect(screen.queryByTestId(innerHtmlContent)).toBeFalsy();
+    expect(screen.queryByTestId(defaultUnauthorized)).toBeFalsy();
+    expect(screen.queryByTestId(customUnauthorized)).toBeTruthy();
+  });
+
+  it('renders specified unauthenticated component when not authenticated', async () => {
+    mockIsTrue.mockReturnValueOnce(true);
+    mockIsAuthenticated = false;
+    const mockAuthContext = getMockUseOktaAuth();
+    const jsx = getJsx(
+      mockAuthContext,
+      RouterCompUnauthorized,
+      RouterCompUnauthenticated
+    );
+    await act(async () => {
+      render(jsx);
+    });
+    expect(screen.queryByTestId(innerHtmlContent)).toBeFalsy();
+    expect(screen.queryByTestId(defaultUnauthenticated)).toBeFalsy();
+    expect(screen.queryByTestId(customUnauthenticated)).toBeTruthy();
   });
 });

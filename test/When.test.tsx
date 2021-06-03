@@ -1,74 +1,85 @@
-import { cleanup, render } from '@testing-library/react';
+import {
+  cleanup,
+  render,
+  RenderResult,
+  act,
+  screen,
+} from '@testing-library/react';
 import React from 'react';
-import { AuthContext, IAuthContext, When } from '../src';
+import { RtrOktaAuth, When } from '../src';
+import { IOktaContext } from '@okta/okta-react/bundles/types/OktaContext';
 
 describe('<When />', () => {
+  const innerHtmlContent = 'innerHtmlContent';
+  let mockIsAuthenticated = true;
+  let mockUser = { sub: '', groups: [], one: [], two: [] };
+  const mockIsTrue = jest.fn();
+
   afterEach(() => {
     cleanup();
     jest.resetAllMocks();
   });
 
-  const innerHtmlContent = 'innerHtmlContent';
-  const userClaims = { one: true, two: true };
-
-  const mockIsTrue = jest.fn();
-
-  function getMockAuthContext(): IAuthContext {
-    return {
-      groups: [],
-      user: userClaims,
-      userDisplayName: '',
-      isAuthenticated: true,
-      login: () => {},
-      logout: (redirectUrl?: any) => new Promise(() => {}),
-      auth: {},
-      _applyAuthState: (auth: any) => new Promise(() => {}),
+  function getMockUseOktaAuth(): IOktaContext {
+    const ctx = {
+      _onAuthRequired: jest.fn(),
+      authState: {
+        isAuthenticated: mockIsAuthenticated,
+      },
+      oktaAuth: {
+        token: {
+          getUserInfo: async () => mockUser,
+        },
+      },
     };
+    return (ctx as unknown) as IOktaContext;
   }
 
-  function getJsx(mockAuthContext: IAuthContext) {
+  function getJsx(mockAuthContext: IOktaContext) {
     return (
-      <AuthContext.Provider value={mockAuthContext}>
+      <RtrOktaAuth authCtx={mockAuthContext}>
         <When isTrue={mockIsTrue}>
           <div data-testid={innerHtmlContent}>Yo!</div>
         </When>
-      </AuthContext.Provider>
+      </RtrOktaAuth>
     );
   }
 
-  it('renders content when isAuthenticated & isTrue() returns true', () => {
-    mockIsTrue.mockReturnValueOnce(true);
-    const authContext = getMockAuthContext();
-    authContext.isAuthenticated = true;
-    const jsx = getJsx(authContext);
-    const { queryByTestId } = render(jsx);
+  async function doRender() {
+    const mockAuthContext = getMockUseOktaAuth();
+    const jsx = getJsx(mockAuthContext);
+    let comp: RenderResult = {} as RenderResult;
+    await act(async () => {
+      comp = render(jsx);
+    });
+    return comp;
+  }
+
+  it('renders content when isAuthenticated & isTrue() returns true', async () => {
+    mockIsTrue.mockReturnValue(true);
+    mockIsAuthenticated = true;
+    const { queryByTestId } = await doRender();
     expect(queryByTestId(innerHtmlContent)).toBeTruthy();
   });
 
-  it('NOT renders content when isAuthenticated & isTrue() returns false', () => {
-    mockIsTrue.mockReturnValueOnce(false);
-    const authContext = getMockAuthContext();
-    authContext.isAuthenticated = true;
-    const jsx = getJsx(authContext);
-    const { queryByTestId } = render(jsx);
+  it('NOT renders content when isAuthenticated & isTrue() returns false', async () => {
+    mockIsTrue.mockReturnValue(false);
+    mockIsAuthenticated = false;
+    const { queryByTestId } = await doRender();
     expect(queryByTestId(innerHtmlContent)).toBeFalsy();
   });
 
-  it('NOT renders content when NOT isAuthenticated & isTrue() returns true', () => {
-    mockIsTrue.mockReturnValueOnce(true);
-    const authContext = getMockAuthContext();
-    authContext.isAuthenticated = false;
-    const jsx = getJsx(authContext);
-    const { queryByTestId } = render(jsx);
+  it('NOT renders content when NOT isAuthenticated & isTrue() returns true', async () => {
+    mockIsTrue.mockReturnValue(true);
+    mockIsAuthenticated = false;
+    const { queryByTestId } = await doRender();
     expect(queryByTestId(innerHtmlContent)).toBeFalsy();
   });
 
-  it('NOT renders content when NOT isAuthenticated & isTrue() returns false', () => {
-    mockIsTrue.mockReturnValueOnce(false);
-    const authContext = getMockAuthContext();
-    authContext.isAuthenticated = false;
-    const jsx = getJsx(authContext);
-    const { queryByTestId } = render(jsx);
+  it('NOT renders content when NOT isAuthenticated & isTrue() returns false', async () => {
+    mockIsTrue.mockReturnValue(false);
+    mockIsAuthenticated = false;
+    const { queryByTestId } = await doRender();
     expect(queryByTestId(innerHtmlContent)).toBeFalsy();
   });
 });

@@ -1,10 +1,10 @@
 import React, { FC } from 'react';
 import IRouteWhenHasClaimProps from './models/IRouteWhenHasClaimProps';
-import RouteWhenHasAnyClaims from './RouteWhenHasAnyClaims';
+import RouteWhenHasAllClaims from './RouteWhenHasAllClaims';
 
 const RouteWhenHasClaim: FC<IRouteWhenHasClaimProps> = props => {
   const { claim, ...rest } = props;
-  return <RouteWhenHasAnyClaims claims={[claim]} {...rest} />;
+  return <RouteWhenHasAllClaims claims={[claim]} {...rest} />;
 };
 
 export default RouteWhenHasClaim;
