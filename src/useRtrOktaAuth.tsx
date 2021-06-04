@@ -9,13 +9,16 @@ import IRtrOktaAuth from './models/IRtrOktaAuth';
 import { RtrOktaAuthContext } from './RtrOktaAuthContext';
 
 export default function useRtrOktaAuth(): IRtrOktaAuth {
-  const { user, userGroups, fetchingUserInfo, authCtx } = React.useContext(
-    RtrOktaAuthContext
-  );
+  const {
+    user,
+    userGroups,
+    authorizationStateKnown,
+    authCtx,
+  } = React.useContext(RtrOktaAuthContext);
 
   return {
     user,
-    fetchingUserInfo,
+    authorizationStateKnown,
     authCtx,
     isMemberOf,
     isMemberOfAny,

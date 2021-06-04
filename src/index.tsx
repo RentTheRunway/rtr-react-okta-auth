@@ -31,6 +31,7 @@ import RtrOktaAuth from './RtrOktaAuth';
 import useRtrOktaAuth from './useRtrOktaAuth';
 import IRtrOktaAuth from './models/IRtrOktaAuth';
 import RouteWhenMemberOf from './RouteWhenMemberOf';
+import WhenAuthStatePending from './WhenAuthStatePending';
 
 const WhenAuthenticatedAnd = When;
 const RouteWhenAuthenticatedAnd = RouteWhen;
@@ -68,15 +69,16 @@ export {
   IWhenHasClaimsProps,
   IRouteWhenHasClaimProps,
   IRouteWhenHasClaimsProps,
-  //When
+  //When Alias
+  WhenAuthenticatedAnd,
+  RouteWhenAuthenticatedAnd,
+  useWhenAuthenticatedAnd,
+  //When Alias
   When,
   RouteWhen,
   useWhen,
   IWhenProps,
   IRouteWhenProps,
   IUseWhen,
-  //WhenAuthenticatedAnd
-  WhenAuthenticatedAnd,
-  RouteWhenAuthenticatedAnd,
-  useWhenAuthenticatedAnd,
+  WhenAuthStatePending,
 };

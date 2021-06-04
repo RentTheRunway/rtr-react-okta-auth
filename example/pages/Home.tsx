@@ -6,6 +6,10 @@ import {
   WhenHasClaim,
   WhenMemberOf,
   WhenMemberOfAny,
+  WhenNotHasAnyClaims,
+  WhenNotHasClaim,
+  WhenNotMemberOf,
+  WhenNotMemberOfAny,
 } from '../../src';
 import NavBar from '../components/NavBar';
 import logo from '../components/RTR_CLOSET_ICON_WHITE.png';
@@ -194,6 +198,22 @@ const Home = () => {
         </section>
 
         <section className="my-4">
+          <div className="text-muted">
+            And... should we not have nicer unauthenticated and unauthorized
+            pages ?
+          </div>
+          <div className="text-muted">
+            Of course... it's all configurable. See the{' '}
+            <a
+              href="https://github.com/RentTheRunway/rtr-react-okta-auth"
+              target="_blank"
+            >
+              docs
+            </a>{' '}
+          </div>
+        </section>
+
+        <section className="my-4">
           <h2>Show and Hide JSX based on Okta User Groups</h2>
           <div className="card border-primary mb-3">
             <div className="card-header">Read Blog Link</div>
@@ -220,6 +240,11 @@ const Home = () => {
                 <WhenMemberOfAny groups={['blog_read', 'blog_admin']}>
                   <Link to="/read">Read Blog</Link>
                 </WhenMemberOfAny>
+                <WhenNotMemberOfAny groups={['blog_read', 'blog_admin']}>
+                  <em className="ml-2 text-muted">
+                    No link here, you're not authorized
+                  </em>
+                </WhenNotMemberOfAny>
               </p>
             </div>
           </div>
@@ -247,6 +272,11 @@ const Home = () => {
                 <WhenMemberOf group="blog_admin">
                   <Link to="/admin">Update Blog</Link>
                 </WhenMemberOf>
+                <WhenNotMemberOf group="blog_admin">
+                  <em className="ml-2 text-muted">
+                    No link here, you're not authorized
+                  </em>
+                </WhenNotMemberOf>
               </p>
             </div>
           </div>
@@ -278,6 +308,11 @@ const Home = () => {
                 <WhenHasAnyClaims claims={['CanDoA', 'CanDoB']}>
                   <Link to="/read">Read Blog</Link>
                 </WhenHasAnyClaims>
+                <WhenNotHasAnyClaims claims={['CanDoA', 'CanDoB']}>
+                  <em className="ml-2 text-muted">
+                    No link here, you're not authorized
+                  </em>
+                </WhenNotHasAnyClaims>
               </p>
             </div>
           </div>
@@ -306,6 +341,11 @@ const Home = () => {
                 <WhenHasClaim claim="CanDoB">
                   <Link to="/admin">Update Blog</Link>
                 </WhenHasClaim>
+                <WhenNotHasClaim claim="CanDoB">
+                  <em className="ml-2 text-muted">
+                    No link here, you're not authorized
+                  </em>
+                </WhenNotHasClaim>
               </p>
             </div>
           </div>
@@ -314,6 +354,10 @@ const Home = () => {
         <hr className="my-4" />
 
         <DocLinks />
+
+        <div className="alert alert-info">
+          Remember... your Okta issuer URL and Client Id are in localStorage
+        </div>
       </div>
     </>
   );

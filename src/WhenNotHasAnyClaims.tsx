@@ -3,8 +3,10 @@ import IWhenHasClaimsProps from './models/IWhenHasClaimsProps';
 import useRtrOktaAuth from './useRtrOktaAuth';
 
 const WhenNotHasAnyClaims: FC<IWhenHasClaimsProps> = props => {
-  const { hasAnyClaims, authCtx } = useRtrOktaAuth();
+  const { hasAnyClaims, authCtx, authorizationStateKnown } = useRtrOktaAuth();
   const { isAuthenticated } = authCtx.authState;
+
+  if (!authorizationStateKnown) return null;
 
   if (!isAuthenticated) return props.children;
 

@@ -3,10 +3,13 @@ import IWhenMemberOfProps from './models/IWhenMemberOfProps';
 import useRtrOktaAuth from './useRtrOktaAuth';
 
 const WhenNotMemberOfAll: FC<IWhenMemberOfProps> = props => {
-  const { isMemberOfAll, authCtx } = useRtrOktaAuth();
+  const { isMemberOfAll, authCtx, authorizationStateKnown } = useRtrOktaAuth();
 
-  const authenticated = authCtx.authState.isAuthenticated;
-  if (!authenticated) return props.children;
+  const { isAuthenticated } = authCtx.authState;
+
+  if (!authorizationStateKnown) return null;
+
+  if (!isAuthenticated) return props.children;
 
   const intersects = isMemberOfAll(props.groups);
   if (!intersects) return props.children;

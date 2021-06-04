@@ -1,7 +1,7 @@
 import { IOktaContext } from '@okta/okta-react/bundles/types/OktaContext';
 export default interface IRtrOktaAuth {
     user: any | null;
-    fetchingUserInfo: boolean;
+    authorizationStateKnown: boolean;
     authCtx: IOktaContext;
     isMemberOf: (group: string) => boolean;
     isMemberOfAny: (groups: string[]) => boolean;

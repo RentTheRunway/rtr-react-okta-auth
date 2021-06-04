@@ -912,9 +912,9 @@ function useRtrOktaUserCtx(_ref) {
       user = _React$useState[0],
       setUser = _React$useState[1];
 
-  var _React$useState2 = useState(null),
-      fetchingUserInfo = _React$useState2[0],
-      setFetchingUserInfo = _React$useState2[1];
+  var _React$useState2 = useState(false),
+      authorizationStateKnown = _React$useState2[0],
+      setAuthorizationStateKnown = _React$useState2[1];
 
   var _React$useState3 = useState([]),
       userGroups = _React$useState3[0],
@@ -926,11 +926,12 @@ function useRtrOktaUserCtx(_ref) {
   return {
     user: user,
     userGroups: userGroups,
-    fetchingUserInfo: fetchingUserInfo,
+    authorizationStateKnown: authorizationStateKnown,
     authCtx: authCtx
   };
 
   function applyAuthState() {
+    if (authState.isPending) return;
     setAuthState();
 
     function setAuthState() {
@@ -939,31 +940,33 @@ function useRtrOktaUserCtx(_ref) {
 
     function _setAuthState() {
       _setAuthState = _asyncToGenerator( /*#__PURE__*/runtime_1.mark(function _callee() {
-        var user;
+        var userInfo;
         return runtime_1.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
                 if (authState.isAuthenticated) {
-                  _context.next = 3;
+                  _context.next = 5;
                   break;
                 }
 
                 setUser(null);
+                setUserGroups([]);
+                setAuthorizationStateKnown(true);
                 return _context.abrupt("return");
 
-              case 3:
-                setFetchingUserInfo(true);
-                _context.next = 6;
+              case 5:
+                setAuthorizationStateKnown(false);
+                _context.next = 8;
                 return oktaAuth.token.getUserInfo();
 
-              case 6:
-                user = _context.sent;
-                setUser(user);
-                setUserGroups(user.groups || []);
-                setFetchingUserInfo(false);
+              case 8:
+                userInfo = _context.sent;
+                setUser(userInfo);
+                setUserGroups(userInfo.groups || []);
+                setAuthorizationStateKnown(true);
 
-              case 10:
+              case 12:
               case "end":
                 return _context.stop();
             }
@@ -977,7 +980,7 @@ function useRtrOktaUserCtx(_ref) {
 var RtrOktaAuthContext = /*#__PURE__*/createContext({
   user: null,
   userGroups: [],
-  fetchingUserInfo: false,
+  authorizationStateKnown: false,
   authCtx: {}
 });
 
@@ -985,12 +988,12 @@ function useRtrOktaAuth() {
   var _React$useContext = useContext(RtrOktaAuthContext),
       user = _React$useContext.user,
       userGroups = _React$useContext.userGroups,
-      fetchingUserInfo = _React$useContext.fetchingUserInfo,
+      authorizationStateKnown = _React$useContext.authorizationStateKnown,
       authCtx = _React$useContext.authCtx;
 
   return {
     user: user,
-    fetchingUserInfo: fetchingUserInfo,
+    authorizationStateKnown: authorizationStateKnown,
     authCtx: authCtx,
     isMemberOf: isMemberOf,
     isMemberOfAny: isMemberOfAny,
@@ -1034,9 +1037,11 @@ function useRtrOktaAuth() {
 var WhenMemberOfAll = function WhenMemberOfAll(props) {
   var _useRtrOktaAuth = useRtrOktaAuth(),
       isMemberOfAll = _useRtrOktaAuth.isMemberOfAll,
-      authCtx = _useRtrOktaAuth.authCtx;
+      authCtx = _useRtrOktaAuth.authCtx,
+      authorizationStateKnown = _useRtrOktaAuth.authorizationStateKnown;
 
-  if (!authCtx.authState.isAuthenticated) return null;
+  var isAuthenticated = authCtx.authState.isAuthenticated;
+  if (!isAuthenticated || !authorizationStateKnown) return null;
   var intersects = isMemberOfAll(props.groups);
 
   if (intersects) {
@@ -1058,9 +1063,11 @@ var WhenMemberOf = function WhenMemberOf(props) {
 var WhenMemberOfAny = function WhenMemberOfAny(props) {
   var _useRtrOktaAuth = useRtrOktaAuth(),
       isMemberOfAny = _useRtrOktaAuth.isMemberOfAny,
-      authCtx = _useRtrOktaAuth.authCtx;
+      authCtx = _useRtrOktaAuth.authCtx,
+      authorizationStateKnown = _useRtrOktaAuth.authorizationStateKnown;
 
-  if (!authCtx.authState.isAuthenticated) return null;
+  var isAuthenticated = authCtx.authState.isAuthenticated;
+  if (!isAuthenticated || !authorizationStateKnown) return null;
   var intersects = isMemberOfAny(props.groups);
 
   if (intersects) {
@@ -1073,10 +1080,12 @@ var WhenMemberOfAny = function WhenMemberOfAny(props) {
 var WhenNotMemberOfAll = function WhenNotMemberOfAll(props) {
   var _useRtrOktaAuth = useRtrOktaAuth(),
       isMemberOfAll = _useRtrOktaAuth.isMemberOfAll,
-      authCtx = _useRtrOktaAuth.authCtx;
+      authCtx = _useRtrOktaAuth.authCtx,
+      authorizationStateKnown = _useRtrOktaAuth.authorizationStateKnown;
 
-  var authenticated = authCtx.authState.isAuthenticated;
-  if (!authenticated) return props.children;
+  var isAuthenticated = authCtx.authState.isAuthenticated;
+  if (!authorizationStateKnown) return null;
+  if (!isAuthenticated) return props.children;
   var intersects = isMemberOfAll(props.groups);
   if (!intersects) return props.children;
   return null;
@@ -1094,10 +1103,12 @@ var WhenNotMemberOf = function WhenNotMemberOf(props) {
 var WhenNotMemberOfAny = function WhenNotMemberOfAny(props) {
   var _useRtrOktaAuth = useRtrOktaAuth(),
       isMemberOfAny = _useRtrOktaAuth.isMemberOfAny,
-      authCtx = _useRtrOktaAuth.authCtx;
+      authCtx = _useRtrOktaAuth.authCtx,
+      authorizationStateKnown = _useRtrOktaAuth.authorizationStateKnown;
 
-  var authenticated = authCtx.authState.isAuthenticated;
-  if (!authenticated) return props.children;
+  var isAuthenticated = authCtx.authState.isAuthenticated;
+  if (!authorizationStateKnown) return null;
+  if (!isAuthenticated) return props.children;
   var intersects = isMemberOfAny(props.groups);
   if (!intersects) return props.children;
   return null;
@@ -1106,10 +1117,11 @@ var WhenNotMemberOfAny = function WhenNotMemberOfAny(props) {
 var WhenHasAllClaims = function WhenHasAllClaims(props) {
   var _useRtrOktaAuth = useRtrOktaAuth(),
       hasAllClaims = _useRtrOktaAuth.hasAllClaims,
-      authCtx = _useRtrOktaAuth.authCtx;
+      authCtx = _useRtrOktaAuth.authCtx,
+      authorizationStateKnown = _useRtrOktaAuth.authorizationStateKnown;
 
   var isAuthenticated = authCtx.authState.isAuthenticated;
-  if (!isAuthenticated) return null;
+  if (!isAuthenticated || !authorizationStateKnown) return null;
   var intersects = hasAllClaims(props.claims);
 
   if (intersects) {
@@ -1131,10 +1143,11 @@ var WhenHasClaim = function WhenHasClaim(props) {
 var WhenHasAnyClaims = function WhenHasAnyClaims(props) {
   var _useRtrOktaAuth = useRtrOktaAuth(),
       hasAnyClaims = _useRtrOktaAuth.hasAnyClaims,
-      authCtx = _useRtrOktaAuth.authCtx;
+      authCtx = _useRtrOktaAuth.authCtx,
+      authorizationStateKnown = _useRtrOktaAuth.authorizationStateKnown;
 
   var isAuthenticated = authCtx.authState.isAuthenticated;
-  if (!isAuthenticated) return null;
+  if (!isAuthenticated || !authorizationStateKnown) return null;
   var intersects = hasAnyClaims(props.claims);
 
   if (intersects) {
@@ -1147,9 +1160,11 @@ var WhenHasAnyClaims = function WhenHasAnyClaims(props) {
 var WhenNotHasAllClaims = function WhenNotHasAllClaims(props) {
   var _useRtrOktaAuth = useRtrOktaAuth(),
       hasAllClaims = _useRtrOktaAuth.hasAllClaims,
-      authCtx = _useRtrOktaAuth.authCtx;
+      authCtx = _useRtrOktaAuth.authCtx,
+      authorizationStateKnown = _useRtrOktaAuth.authorizationStateKnown;
 
   var isAuthenticated = authCtx.authState.isAuthenticated;
+  if (!authorizationStateKnown) return null;
   if (!isAuthenticated) return props.children;
   var intersects = hasAllClaims(props.claims);
   if (!intersects) return props.children;
@@ -1168,9 +1183,11 @@ var WhenNotHasClaim = function WhenNotHasClaim(props) {
 var WhenNotHasAnyClaims = function WhenNotHasAnyClaims(props) {
   var _useRtrOktaAuth = useRtrOktaAuth(),
       hasAnyClaims = _useRtrOktaAuth.hasAnyClaims,
-      authCtx = _useRtrOktaAuth.authCtx;
+      authCtx = _useRtrOktaAuth.authCtx,
+      authorizationStateKnown = _useRtrOktaAuth.authorizationStateKnown;
 
   var isAuthenticated = authCtx.authState.isAuthenticated;
+  if (!authorizationStateKnown) return null;
   if (!isAuthenticated) return props.children;
   var intersects = hasAnyClaims(props.claims);
   if (!intersects) return props.children;
@@ -1279,9 +1296,16 @@ var RouteWhenMemberOf = function RouteWhenMemberOf(props) {
   }, rest));
 };
 
+var WhenAuthStatePending = function WhenAuthStatePending(props) {
+  var _useRtrOktaAuth = useRtrOktaAuth(),
+      authorizationStateKnown = _useRtrOktaAuth.authorizationStateKnown;
+
+  return authorizationStateKnown ? props.children : null;
+};
+
 var WhenAuthenticatedAnd = When;
 var RouteWhenAuthenticatedAnd = RouteWhen;
 var useWhenAuthenticatedAnd = useWhen;
 
-export { RouteWhen, RouteWhenAuthenticatedAnd, RouteWhenHasAllClaims, RouteWhenHasAnyClaims, RouteWhenHasClaim, RouteWhenMemberOf, RouteWhenMemberOfAll, RouteWhenMemberOfAny, RtrOktaAuth, When, WhenAuthenticatedAnd, WhenHasAllClaims, WhenHasAnyClaims, WhenHasClaim, WhenMemberOf, WhenMemberOfAll, WhenMemberOfAny, WhenNotHasAllClaims, WhenNotHasAnyClaims, WhenNotHasClaim, WhenNotMemberOf, WhenNotMemberOfAll, WhenNotMemberOfAny, useRtrOktaAuth, useWhen, useWhenAuthenticatedAnd };
+export { RouteWhen, RouteWhenAuthenticatedAnd, RouteWhenHasAllClaims, RouteWhenHasAnyClaims, RouteWhenHasClaim, RouteWhenMemberOf, RouteWhenMemberOfAll, RouteWhenMemberOfAny, RtrOktaAuth, When, WhenAuthStatePending, WhenAuthenticatedAnd, WhenHasAllClaims, WhenHasAnyClaims, WhenHasClaim, WhenMemberOf, WhenMemberOfAll, WhenMemberOfAny, WhenNotHasAllClaims, WhenNotHasAnyClaims, WhenNotHasClaim, WhenNotMemberOf, WhenNotMemberOfAll, WhenNotMemberOfAny, useRtrOktaAuth, useWhen, useWhenAuthenticatedAnd };
 //# sourceMappingURL=rtr-react-okta-auth.esm.js.map

@@ -8,12 +8,14 @@ interface Props {
 interface IRtrOktaAuthUserCtx {
   user: any | null;
   userGroups: string[];
-  fetchingUserInfo: boolean;
+  authorizationStateKnown: boolean;
   authCtx: IOktaContext;
 }
 export function useRtrOktaUserCtx({ authCtx }: Props): IRtrOktaAuthUserCtx {
   const [user, setUser] = React.useState<any>(null);
-  const [fetchingUserInfo, setFetchingUserInfo] = React.useState<any>(null);
+  const [authorizationStateKnown, setAuthorizationStateKnown] = React.useState<
+    boolean
+  >(false);
   const [userGroups, setUserGroups] = React.useState<string[]>([]);
   const { authState, oktaAuth } = authCtx;
 
@@ -22,22 +24,27 @@ export function useRtrOktaUserCtx({ authCtx }: Props): IRtrOktaAuthUserCtx {
   return {
     user,
     userGroups,
-    fetchingUserInfo,
+    authorizationStateKnown,
     authCtx,
   };
 
   function applyAuthState() {
+    if (authState.isPending) return;
+
     setAuthState();
     async function setAuthState() {
       if (!authState.isAuthenticated) {
         setUser(null);
+        setUserGroups([]);
+        setAuthorizationStateKnown(true);
         return;
       }
-      setFetchingUserInfo(true);
-      const user = await oktaAuth.token.getUserInfo();
-      setUser(user);
-      setUserGroups(user.groups || []);
-      setFetchingUserInfo(false);
+
+      setAuthorizationStateKnown(false);
+      const userInfo = await oktaAuth.token.getUserInfo();
+      setUser(userInfo);
+      setUserGroups(userInfo.groups || []);
+      setAuthorizationStateKnown(true);
     }
   }
 }
@@ -45,6 +52,6 @@ export function useRtrOktaUserCtx({ authCtx }: Props): IRtrOktaAuthUserCtx {
 export const RtrOktaAuthContext = React.createContext<IRtrOktaAuthUserCtx>({
   user: null,
   userGroups: [],
-  fetchingUserInfo: false,
+  authorizationStateKnown: false,
   authCtx: {} as IOktaContext,
 });

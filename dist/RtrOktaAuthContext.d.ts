@@ -6,7 +6,7 @@ interface Props {
 interface IRtrOktaAuthUserCtx {
     user: any | null;
     userGroups: string[];
-    fetchingUserInfo: boolean;
+    authorizationStateKnown: boolean;
     authCtx: IOktaContext;
 }
 export declare function useRtrOktaUserCtx({ authCtx }: Props): IRtrOktaAuthUserCtx;
