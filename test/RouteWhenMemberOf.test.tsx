@@ -1,21 +1,18 @@
-import React from 'react';
-import { Router } from 'react-router-dom';
-import { createMemoryHistory } from 'history';
+import { IOktaContext } from '@okta/okta-react/bundles/types/OktaContext';
 import {
-  RouteWhenMemberOfAll,
-  IRouteWhenMemberOfProps,
-  RtrOktaAuth,
-} from '../src';
-import {
+  act,
   cleanup,
   render,
   RenderResult,
-  act,
   screen,
 } from '@testing-library/react';
-import { IOktaContext } from '@okta/okta-react/bundles/types/OktaContext';
+import { createMemoryHistory } from 'history';
+import React from 'react';
+import { Router } from 'react-router-dom';
+import { RouteWhenMemberOf, RtrOktaAuth } from '../src';
+import IRouteWhenMemberOfGroupProps from '../src/models/IRouteWhenMemberOfGroupProps';
 
-describe('<RouteWhenMemberOfAll />', () => {
+describe('<RouteWhenMemberOf />', () => {
   const userGroups = ['one', 'two'];
   const innerHtmlContent = 'innerHtmlContent';
   const defaultUnauthenticated = 'default-unauthenticated';
@@ -60,13 +57,13 @@ describe('<RouteWhenMemberOfAll />', () => {
 
   function getJsx(
     mockAuthContext: any,
-    targetGroups: string[],
+    targetGroup: string,
     unauthorizedComponent?: any,
     unauthenticatedComponent?: any
   ) {
     const history = createMemoryHistory();
-    const props: IRouteWhenMemberOfProps = {
-      groups: targetGroups,
+    const props: IRouteWhenMemberOfGroupProps = {
+      group: targetGroup,
       path: '/',
       exact: true,
       component: RouterComp,
@@ -80,15 +77,15 @@ describe('<RouteWhenMemberOfAll />', () => {
     return (
       <Router history={history}>
         <RtrOktaAuth authCtx={mockAuthContext}>
-          <RouteWhenMemberOfAll {...props} />
+          <RouteWhenMemberOf {...props} />
         </RtrOktaAuth>
       </Router>
     );
   }
 
-  async function renderForTargetGroups(targetGroups: string[]) {
+  async function renderForTargetGroup(targetGroup: string) {
     const mockAuthContext = getMockUseOktaAuth();
-    const jsx = getJsx(mockAuthContext, targetGroups);
+    const jsx = getJsx(mockAuthContext, targetGroup);
     let comp: RenderResult = {} as RenderResult;
     await act(async () => {
       comp = render(jsx);
@@ -98,42 +95,32 @@ describe('<RouteWhenMemberOfAll />', () => {
 
   it('renders component when authenticated and matches group', async () => {
     mockIsAuthenticated = true;
-    const { queryByTestId } = await renderForTargetGroups(userGroups.slice());
+    const { queryByTestId } = await renderForTargetGroup(userGroups[0]);
     expect(queryByTestId(innerHtmlContent)).toBeTruthy();
   });
 
-  it('NOT renders component (renders default unauthorized) when authenticated but NOT matching all groups, extra group', async () => {
-    const { queryByTestId } = await renderForTargetGroups(
-      userGroups.slice().concat('other')
-    );
+  it('NOT renders component (renders default unauthorized) when authenticated but NOT matches group', async () => {
+    const { queryByTestId } = await renderForTargetGroup('other');
     expect(queryByTestId(innerHtmlContent)).toBeFalsy();
     expect(queryByTestId(defaultUnauthorized)).toBeTruthy();
   });
 
   it('NOT renders component (renders default unauthenticated) when NOT authenticated but matches group', async () => {
     mockIsAuthenticated = false;
-    const { queryByTestId } = await renderForTargetGroups(userGroups);
+    const { queryByTestId } = await renderForTargetGroup(userGroups[0]);
     expect(queryByTestId(innerHtmlContent)).toBeFalsy();
     expect(queryByTestId(defaultUnauthenticated)).toBeTruthy();
   });
 
-  it('renders component when matching all target groups but not all available groups', async () => {
-    const targetGroups = userGroups.slice().splice(0, userGroups.length - 1);
-    const { queryByTestId } = await renderForTargetGroups(targetGroups);
-    expect(queryByTestId(innerHtmlContent)).toBeTruthy();
-    expect(queryByTestId(defaultUnauthorized)).toBeFalsy();
-  });
-
-  it('NOT renders component when no groups specified', async () => {
-    const { queryByTestId } = await renderForTargetGroups([]);
+  it('NOT renders component when no group specified', async () => {
+    const { queryByTestId } = await renderForTargetGroup('');
     expect(queryByTestId(innerHtmlContent)).toBeFalsy();
     expect(queryByTestId(defaultUnauthorized)).toBeTruthy();
   });
 
   it('renders specified Unauthorized component when not auhtorized', async () => {
     const mockAuthContext = getMockUseOktaAuth();
-    const targetGroups: string[] = [];
-    const jsx = getJsx(mockAuthContext, targetGroups, RouterCompUnauthorized);
+    const jsx = getJsx(mockAuthContext, '', RouterCompUnauthorized);
     await act(async () => {
       render(jsx);
     });
@@ -146,7 +133,7 @@ describe('<RouteWhenMemberOfAll />', () => {
     const mockAuthContext = getMockUseOktaAuth();
     const jsx = getJsx(
       mockAuthContext,
-      userGroups,
+      userGroups[0],
       RouterCompUnauthorized,
       RouterCompUnauthenticated
     );

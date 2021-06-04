@@ -1,10 +1,4 @@
-import {
-  cleanup,
-  render,
-  RenderResult,
-  act,
-  screen,
-} from '@testing-library/react';
+import { cleanup, render, RenderResult, act } from '@testing-library/react';
 import React from 'react';
 import { RtrOktaAuth, When } from '../src';
 import { IOktaContext } from '@okta/okta-react/bundles/types/OktaContext';

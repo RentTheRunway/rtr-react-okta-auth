@@ -1,6 +1,6 @@
 import { RouteProps } from 'react-router-dom';
-export default interface IRouteWhenMemberOfProps extends RouteProps {
-    groups: string[];
+export default interface IRouteWhenMemberOfGroupProps extends RouteProps {
+    group: string;
     unauthenticatedComponent?: any;
     unauthorizedComponent?: any;
 }

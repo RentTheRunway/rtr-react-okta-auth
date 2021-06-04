@@ -1,5 +1,4 @@
-import React__default, { useState, createContext, useContext, useEffect, createElement } from 'react';
-import { useOktaAuth, withOktaAuth } from '@okta/okta-react';
+import React__default, { createContext, useState, useEffect, useContext, createElement } from 'react';
 import { Route } from 'react-router-dom';
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
@@ -51,6 +50,105 @@ function _objectWithoutPropertiesLoose(source, excluded) {
   }
 
   return target;
+}
+
+var DefaultUnauthorized = function DefaultUnauthorized() {
+  return React__default.createElement("div", {
+    "data-testid": "default-unauthorized"
+  }, React__default.createElement("div", null, "Unauthorized"));
+};
+
+var DefaultUnAuthenticated = function DefaultUnAuthenticated() {
+  var _useRtrOktaAuth = useRtrOktaAuth(),
+      authCtx = _useRtrOktaAuth.authCtx;
+
+  if (!authCtx.authState.isAuthenticated) {
+    return React__default.createElement("div", {
+      "data-testid": "default-unauthenticated"
+    }, React__default.createElement("div", null, "Unauthenticated"));
+  }
+
+  return null;
+};
+
+var RouteWhenMemberOfAll = function RouteWhenMemberOfAll(props) {
+  var groups = props.groups,
+      component = props.component,
+      unauthenticatedComponent = props.unauthenticatedComponent,
+      unauthorizedComponent = props.unauthorizedComponent,
+      rest = _objectWithoutPropertiesLoose(props, ["groups", "component", "unauthenticatedComponent", "unauthorizedComponent"]);
+
+  var _useRtrOktaAuth = useRtrOktaAuth(),
+      isMemberOfAll = _useRtrOktaAuth.isMemberOfAll,
+      authCtx = _useRtrOktaAuth.authCtx;
+
+  var isAuthenticated = authCtx.authState.isAuthenticated;
+  var intersects = isMemberOfAll(groups);
+  var compToRender = isAuthenticated ? intersects ? component : !!unauthorizedComponent ? unauthorizedComponent : DefaultUnauthorized : !!unauthenticatedComponent ? unauthenticatedComponent : DefaultUnAuthenticated;
+  return React__default.createElement(Route, Object.assign({}, rest, {
+    component: compToRender
+  }));
+};
+
+var RouteWhenMemberOfAny = function RouteWhenMemberOfAny(props) {
+  var groups = props.groups,
+      component = props.component,
+      unauthenticatedComponent = props.unauthenticatedComponent,
+      unauthorizedComponent = props.unauthorizedComponent,
+      rest = _objectWithoutPropertiesLoose(props, ["groups", "component", "unauthenticatedComponent", "unauthorizedComponent"]);
+
+  var _useRtrOktaAuth = useRtrOktaAuth(),
+      isMemberOfAny = _useRtrOktaAuth.isMemberOfAny,
+      authCtx = _useRtrOktaAuth.authCtx;
+
+  var isAuthenticated = authCtx.authState.isAuthenticated;
+  var intersects = isMemberOfAny(groups);
+  var compToRender = isAuthenticated ? intersects ? component : !!unauthorizedComponent ? unauthorizedComponent : DefaultUnauthorized : !!unauthenticatedComponent ? unauthenticatedComponent : DefaultUnAuthenticated;
+  return React__default.createElement(Route, Object.assign({}, rest, {
+    component: compToRender
+  }));
+};
+
+function getIntersection(_arrayA, _arrayB) {
+  var arrayA = _arrayA.map(function (e) {
+    return e.toLowerCase().trim();
+  });
+
+  var arrayB = _arrayB.map(function (e) {
+    return e.toLowerCase().trim();
+  });
+
+  var intersection = arrayA.filter(function (e) {
+    return arrayB.includes(e);
+  });
+  return intersection;
+}
+
+function hasIntersection(arrayA, arrayB) {
+  var intersection = getIntersection(arrayA, arrayB);
+  return intersection.length > 0;
+}
+
+function hasFullIntersection(groupsRequested, availableGroups) {
+  var intersection = getIntersection(groupsRequested, availableGroups);
+  return intersection.length === groupsRequested.length && groupsRequested.length > 0;
+}
+
+function hasAnyProperty(obj, properties) {
+  for (var i = 0; i < properties.length; i++) {
+    if (obj.hasOwnProperty(properties[i])) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+function hasAllProperties(obj, properties) {
+  var matching = properties.filter(function (property) {
+    return obj.hasOwnProperty(property);
+  });
+  return !!properties.length && matching.length === properties.length;
 }
 
 function createCommonjsModule(fn, module) {
@@ -807,459 +905,6 @@ try {
 }
 });
 
-function useAuthContextState() {
-  var _useState = useState([]),
-      groups = _useState[0],
-      setGroups = _useState[1];
-
-  var _useState2 = useState({}),
-      user = _useState2[0],
-      setUser = _useState2[1];
-
-  var _useState3 = useState(""),
-      userDisplayName = _useState3[0],
-      setUserDisplayName = _useState3[1];
-
-  var _useState4 = useState(false),
-      isAuthenticated = _useState4[0],
-      setIsAuthenticated = _useState4[1];
-
-  var _useState5 = useState(null),
-      auth = _useState5[0],
-      setAuth = _useState5[1];
-
-  return {
-    groups: groups,
-    user: user,
-    userDisplayName: userDisplayName,
-    isAuthenticated: isAuthenticated,
-    logout: logout,
-    login: login,
-    auth: auth,
-    _applyAuthState: _applyAuthState
-  };
-
-  function login(returnUrl) {
-    var redirectTo = typeof returnUrl === "string" ? returnUrl : "/";
-    auth.login(redirectTo);
-  }
-
-  function logout(_x) {
-    return _logout.apply(this, arguments);
-  }
-
-  function _logout() {
-    _logout = _asyncToGenerator( /*#__PURE__*/runtime_1.mark(function _callee(returnUrl) {
-      var redirectTo;
-      return runtime_1.wrap(function _callee$(_context) {
-        while (1) {
-          switch (_context.prev = _context.next) {
-            case 0:
-              redirectTo = typeof returnUrl === "string" ? returnUrl : "/";
-              _context.next = 3;
-              return auth.logout(redirectTo);
-
-            case 3:
-              clearAfterLogout();
-
-            case 4:
-            case "end":
-              return _context.stop();
-          }
-        }
-      }, _callee);
-    }));
-    return _logout.apply(this, arguments);
-  }
-
-  function _applyAuthState(_x2) {
-    return _applyAuthState2.apply(this, arguments);
-  }
-
-  function _applyAuthState2() {
-    _applyAuthState2 = _asyncToGenerator( /*#__PURE__*/runtime_1.mark(function _callee2(authService) {
-      return runtime_1.wrap(function _callee2$(_context2) {
-        while (1) {
-          switch (_context2.prev = _context2.next) {
-            case 0:
-              setAuth(authService);
-              _context2.next = 3;
-              return applyAuthState(authService);
-
-            case 3:
-            case "end":
-              return _context2.stop();
-          }
-        }
-      }, _callee2);
-    }));
-    return _applyAuthState2.apply(this, arguments);
-  }
-
-  function applyAuthState(_x3) {
-    return _applyAuthState3.apply(this, arguments);
-  }
-
-  function _applyAuthState3() {
-    _applyAuthState3 = _asyncToGenerator( /*#__PURE__*/runtime_1.mark(function _callee3(authService) {
-      var authState, isAuth, _user;
-
-      return runtime_1.wrap(function _callee3$(_context3) {
-        while (1) {
-          switch (_context3.prev = _context3.next) {
-            case 0:
-              authState = authService.getAuthState();
-              isAuth = authState.isAuthenticated;
-
-              if (!(isAuthenticated !== isAuth)) {
-                _context3.next = 14;
-                break;
-              }
-
-              if (!isAuth) {
-                _context3.next = 13;
-                break;
-              }
-
-              setIsAuthenticated(true);
-              _context3.next = 7;
-              return authService.getUser();
-
-            case 7:
-              _user = _context3.sent;
-              setUser(_user);
-              setGroups(_user.groups || []);
-              setUserDisplayName(_user.given_name + " " + _user.family_name);
-              _context3.next = 14;
-              break;
-
-            case 13:
-              clearAfterLogout();
-
-            case 14:
-              return _context3.abrupt("return", isAuth);
-
-            case 15:
-            case "end":
-              return _context3.stop();
-          }
-        }
-      }, _callee3);
-    }));
-    return _applyAuthState3.apply(this, arguments);
-  }
-
-  function clearAfterLogout() {
-    setIsAuthenticated(false);
-    setGroups([]);
-    setUserDisplayName("");
-    setUser({});
-  }
-}
-var AuthContext = /*#__PURE__*/createContext({});
-var AuthContextProvider = AuthContext.Provider;
-
-var DefaultUnauthorized = function DefaultUnauthorized() {
-  return React__default.createElement("div", {
-    "data-testid": "default-unauthorized"
-  }, React__default.createElement("div", {
-    className: "rtr-react-okta-auth-unauthorized"
-  }, "Unauthorized"));
-};
-
-var UnAuthenticated = function UnAuthenticated() {
-  var authContext = useContext(AuthContext);
-  useEffect(function () {
-    if (!authContext.isAuthenticated) {
-      var path = "" + window.location.pathname + window.location.search;
-      authContext.login(path);
-    }
-  }, []);
-  return null;
-};
-
-var RouteWhenMemberOfAll = function RouteWhenMemberOfAll(props) {
-  var groups = props.groups,
-      rest = _objectWithoutPropertiesLoose(props, ["groups", "component", "unauthorizedComponent"]);
-
-  var isAuthenticated = useOktaAuth().authState.isAuthenticated;
-
-  var _useRtrOktaAuth = useRtrOktaAuth(),
-      isMemberOfAll = _useRtrOktaAuth.isMemberOfAll;
-
-  var intersects = isMemberOfAll(groups);
-  var compToRender = isAuthenticated ? intersects ? props.component : !!props.unauthorizedComponent ? props.unauthorizedComponent : DefaultUnauthorized : UnAuthenticated;
-  return React__default.createElement(Route, Object.assign({}, rest, {
-    component: compToRender
-  }));
-};
-
-function getIntersection(_arrayA, _arrayB) {
-  var arrayA = _arrayA.map(function (e) {
-    return e.toLowerCase().trim();
-  });
-
-  var arrayB = _arrayB.map(function (e) {
-    return e.toLowerCase().trim();
-  });
-
-  var intersection = arrayA.filter(function (e) {
-    return arrayB.includes(e);
-  });
-  return intersection;
-}
-
-function hasIntersection(arrayA, arrayB) {
-  var intersection = getIntersection(arrayA, arrayB);
-  return intersection.length > 0;
-}
-
-function hasFullIntersection(groupsRequested, availableGroups) {
-  var intersection = getIntersection(groupsRequested, availableGroups);
-  return intersection.length === groupsRequested.length && groupsRequested.length > 0;
-}
-
-function hasAnyProperty(obj, properties) {
-  for (var i = 0; i < properties.length; i++) {
-    if (obj.hasOwnProperty(properties[i])) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
-function hasAllProperties(obj, properties) {
-  var matching = properties.filter(function (property) {
-    return obj.hasOwnProperty(property);
-  });
-  return !!properties.length && matching.length === properties.length;
-}
-
-var RouteWhenMemberOfAny = function RouteWhenMemberOfAny(props) {
-  var groups = props.groups,
-      component = props.component,
-      unauthorizedComponent = props.unauthorizedComponent,
-      rest = _objectWithoutPropertiesLoose(props, ["groups", "component", "unauthorizedComponent"]);
-
-  var authContext = useContext(AuthContext);
-  var isAuthenticated = authContext.isAuthenticated;
-  var intersects = hasIntersection(authContext.groups, groups);
-  var compToRender = isAuthenticated ? intersects ? component : !!unauthorizedComponent ? unauthorizedComponent : DefaultUnauthorized : UnAuthenticated;
-  return React__default.createElement(Route, Object.assign({}, rest, {
-    component: compToRender
-  }));
-};
-
-var WhenMemberOfAll = function WhenMemberOfAll(props) {
-  var authContext = useContext(AuthContext);
-  if (!authContext.isAuthenticated) return null;
-  var fullintersection = hasFullIntersection(props.groups, authContext.groups);
-
-  if (fullintersection) {
-    return props.children;
-  }
-
-  return null;
-};
-
-var WhenMemberOfAny = function WhenMemberOfAny(props) {
-  var authContext = useContext(AuthContext);
-  if (!authContext.isAuthenticated) return null;
-  var intersects = hasIntersection(authContext.groups, props.groups);
-
-  if (intersects) {
-    return props.children;
-  }
-
-  return null;
-};
-
-function withAuthUpdator(Component, onAuthKnown, onAuthPending) {
-  return Updater;
-
-  function Updater(props) {
-    var _useOktaAuth = useOktaAuth(),
-        authService = _useOktaAuth.authService,
-        authState = _useOktaAuth.authState;
-
-    var _useState = useState(false),
-        authStateIsSetup = _useState[0],
-        setAuthStateIsSetup = _useState[1];
-
-    var authContextState = useContext(AuthContext);
-    var authPending = authState && authState.isPending;
-    var authKnown = authState && !authState.isPending;
-    useEffect(onAuthStateChange, [authKnown]);
-
-    if (authPending) {
-      onAuthPending();
-      return null;
-    }
-
-    if (authStateIsSetup) {
-      onAuthKnown();
-      return React__default.createElement(Component, Object.assign({}, props));
-    }
-
-    return null;
-
-    function onAuthStateChange() {
-      var currentUrl = "" + window.location.origin + window.location.pathname;
-      var redirectUri = authService._config.redirectUri;
-      var shouldRun = currentUrl !== redirectUri;
-
-      if (authKnown && shouldRun) {
-        setupAuthAwareness();
-      }
-
-      function setupAuthAwareness() {
-        return _setupAuthAwareness.apply(this, arguments);
-      }
-
-      function _setupAuthAwareness() {
-        _setupAuthAwareness = _asyncToGenerator( /*#__PURE__*/runtime_1.mark(function _callee() {
-          return runtime_1.wrap(function _callee$(_context) {
-            while (1) {
-              switch (_context.prev = _context.next) {
-                case 0:
-                  _context.next = 2;
-                  return authContextState._applyAuthState(authService);
-
-                case 2:
-                  setAuthStateIsSetup(true);
-
-                case 3:
-                case "end":
-                  return _context.stop();
-              }
-            }
-          }, _callee);
-        }));
-        return _setupAuthAwareness.apply(this, arguments);
-      }
-    }
-  }
-}
-
-function withAuthAwareness(Component, onAuthKnown, onAuthPending) {
-  if (onAuthKnown === void 0) {
-    onAuthKnown = function onAuthKnown() {};
-  }
-
-  if (onAuthPending === void 0) {
-    onAuthPending = function onAuthPending() {};
-  }
-
-  return withOktaAuth(withAuthUpdator(Component, onAuthKnown, onAuthPending));
-}
-
-var WhenHasClaim = function WhenHasClaim(props) {
-  var authContext = useContext(AuthContext);
-  if (!authContext.isAuthenticated) return null;
-  var intersects = hasAnyProperty(authContext.user, [props.claim]);
-
-  if (intersects) {
-    return props.children;
-  }
-
-  return null;
-};
-
-var WhenHasAnyClaims = function WhenHasAnyClaims(props) {
-  var authContext = useContext(AuthContext);
-  if (!authContext.isAuthenticated) return null;
-  var intersects = hasAnyProperty(authContext.user, props.claims);
-
-  if (intersects) {
-    return props.children;
-  }
-
-  return null;
-};
-
-var WhenHasAllClaims = function WhenHasAllClaims(props) {
-  var authContext = useContext(AuthContext);
-  if (!authContext.isAuthenticated) return null;
-  var intersects = hasAllProperties(authContext.user, props.claims);
-
-  if (intersects) {
-    return props.children;
-  }
-
-  return null;
-};
-
-var RouteWhenHasAnyClaims = function RouteWhenHasAnyClaims(props) {
-  var claims = props.claims,
-      component = props.component,
-      unauthorizedComponent = props.unauthorizedComponent,
-      rest = _objectWithoutPropertiesLoose(props, ["claims", "component", "unauthorizedComponent"]);
-
-  var authContext = useContext(AuthContext);
-  var isAuthenticated = authContext.isAuthenticated;
-  var intersects = hasAnyProperty(authContext.user, claims);
-  var compToRender = isAuthenticated ? intersects ? component : !!unauthorizedComponent ? unauthorizedComponent : DefaultUnauthorized : UnAuthenticated;
-  return React__default.createElement(Route, Object.assign({}, rest, {
-    component: compToRender
-  }));
-};
-
-var RouteWhenHasClaim = function RouteWhenHasClaim(props) {
-  return React__default.createElement(RouteWhenHasAnyClaims, Object.assign({}, props, {
-    claims: [props.claim]
-  }));
-};
-
-var RouteWhenHasAllClaims = function RouteWhenHasAllClaims(props) {
-  var claims = props.claims,
-      component = props.component,
-      unauthorizedComponent = props.unauthorizedComponent,
-      rest = _objectWithoutPropertiesLoose(props, ["claims", "component", "unauthorizedComponent"]);
-
-  var authContext = useContext(AuthContext);
-  var isAuthenticated = authContext.isAuthenticated;
-  var intersects = hasAllProperties(authContext.user, claims);
-  var compToRender = isAuthenticated ? intersects ? component : !!unauthorizedComponent ? unauthorizedComponent : DefaultUnauthorized : UnAuthenticated;
-  return React__default.createElement(Route, Object.assign({}, rest, {
-    component: compToRender
-  }));
-};
-
-var When = function When(props) {
-  var authContext = useContext(AuthContext);
-  if (!authContext.isAuthenticated) return null;
-  if (props.isTrue()) return props.children;
-  return null;
-};
-
-var RouteWhen = function RouteWhen(props) {
-  var component = props.component,
-      unauthorizedComponent = props.unauthorizedComponent,
-      isTrue = props.isTrue,
-      rest = _objectWithoutPropertiesLoose(props, ["component", "unauthorizedComponent", "isTrue"]);
-
-  var authContext = useContext(AuthContext);
-  var isAuthenticated = authContext.isAuthenticated;
-  var hasAccess = isTrue();
-  var compToRender = isAuthenticated ? hasAccess ? component : !!unauthorizedComponent ? unauthorizedComponent : DefaultUnauthorized : UnAuthenticated;
-  return React__default.createElement(Route, Object.assign({}, rest, {
-    component: compToRender
-  }));
-};
-
-function useWhen() {
-  var authContext = useContext(AuthContext);
-  return {
-    when: when
-  };
-
-  function when(fn) {
-    if (!authContext.isAuthenticated) return false;
-    return fn();
-  }
-}
-
 function useRtrOktaUserCtx(_ref) {
   var authCtx = _ref.authCtx;
 
@@ -1281,7 +926,8 @@ function useRtrOktaUserCtx(_ref) {
   return {
     user: user,
     userGroups: userGroups,
-    fetchingUserInfo: fetchingUserInfo
+    fetchingUserInfo: fetchingUserInfo,
+    authCtx: authCtx
   };
 
   function applyAuthState() {
@@ -1331,34 +977,26 @@ function useRtrOktaUserCtx(_ref) {
 var RtrOktaAuthContext = /*#__PURE__*/createContext({
   user: null,
   userGroups: [],
-  fetchingUserInfo: false
+  fetchingUserInfo: false,
+  authCtx: {}
 });
-
-var RtrOktaAuth = function RtrOktaAuth(_ref) {
-  var authCtx = _ref.authCtx,
-      children = _ref.children;
-  var rtrOktaUserCtx = useRtrOktaUserCtx({
-    authCtx: authCtx
-  });
-  return createElement(RtrOktaAuthContext.Provider, {
-    value: rtrOktaUserCtx
-  }, children);
-};
 
 function useRtrOktaAuth() {
   var _React$useContext = useContext(RtrOktaAuthContext),
       user = _React$useContext.user,
       userGroups = _React$useContext.userGroups,
-      fetchingUserInfo = _React$useContext.fetchingUserInfo;
+      fetchingUserInfo = _React$useContext.fetchingUserInfo,
+      authCtx = _React$useContext.authCtx;
 
   return {
     user: user,
     fetchingUserInfo: fetchingUserInfo,
+    authCtx: authCtx,
     isMemberOf: isMemberOf,
     isMemberOfAny: isMemberOfAny,
     isMemberOfAll: isMemberOfAll,
     hasClaim: hasClaim,
-    hasAnyClaim: hasAnyClaim,
+    hasAnyClaims: hasAnyClaims,
     hasAllClaims: hasAllClaims
   };
 
@@ -1382,7 +1020,7 @@ function useRtrOktaAuth() {
     return hasAnyProperty(user, [claim]);
   }
 
-  function hasAnyClaim(claims) {
+  function hasAnyClaims(claims) {
     if (!user) return false;
     return hasAnyProperty(user, claims);
   }
@@ -1393,5 +1031,253 @@ function useRtrOktaAuth() {
   }
 }
 
-export { AuthContext, AuthContextProvider, RouteWhen, RouteWhenHasAllClaims, RouteWhenHasAnyClaims, RouteWhenHasClaim, RouteWhenMemberOfAll, RouteWhenMemberOfAny, RtrOktaAuth, When, WhenHasAllClaims, WhenHasAnyClaims, WhenHasClaim, WhenMemberOfAll, WhenMemberOfAny, useAuthContextState, useRtrOktaAuth, useWhen, withAuthAwareness };
+var WhenMemberOfAll = function WhenMemberOfAll(props) {
+  var _useRtrOktaAuth = useRtrOktaAuth(),
+      isMemberOfAll = _useRtrOktaAuth.isMemberOfAll,
+      authCtx = _useRtrOktaAuth.authCtx;
+
+  if (!authCtx.authState.isAuthenticated) return null;
+  var intersects = isMemberOfAll(props.groups);
+
+  if (intersects) {
+    return props.children;
+  }
+
+  return null;
+};
+
+var WhenMemberOf = function WhenMemberOf(props) {
+  var group = props.group,
+      rest = _objectWithoutPropertiesLoose(props, ["group"]);
+
+  return React__default.createElement(WhenMemberOfAll, Object.assign({
+    groups: [group]
+  }, rest));
+};
+
+var WhenMemberOfAny = function WhenMemberOfAny(props) {
+  var _useRtrOktaAuth = useRtrOktaAuth(),
+      isMemberOfAny = _useRtrOktaAuth.isMemberOfAny,
+      authCtx = _useRtrOktaAuth.authCtx;
+
+  if (!authCtx.authState.isAuthenticated) return null;
+  var intersects = isMemberOfAny(props.groups);
+
+  if (intersects) {
+    return props.children;
+  }
+
+  return null;
+};
+
+var WhenNotMemberOfAll = function WhenNotMemberOfAll(props) {
+  var _useRtrOktaAuth = useRtrOktaAuth(),
+      isMemberOfAll = _useRtrOktaAuth.isMemberOfAll,
+      authCtx = _useRtrOktaAuth.authCtx;
+
+  var authenticated = authCtx.authState.isAuthenticated;
+  if (!authenticated) return props.children;
+  var intersects = isMemberOfAll(props.groups);
+  if (!intersects) return props.children;
+  return null;
+};
+
+var WhenNotMemberOf = function WhenNotMemberOf(props) {
+  var group = props.group,
+      rest = _objectWithoutPropertiesLoose(props, ["group"]);
+
+  return React__default.createElement(WhenNotMemberOfAll, Object.assign({
+    groups: [group]
+  }, rest));
+};
+
+var WhenNotMemberOfAny = function WhenNotMemberOfAny(props) {
+  var _useRtrOktaAuth = useRtrOktaAuth(),
+      isMemberOfAny = _useRtrOktaAuth.isMemberOfAny,
+      authCtx = _useRtrOktaAuth.authCtx;
+
+  var authenticated = authCtx.authState.isAuthenticated;
+  if (!authenticated) return props.children;
+  var intersects = isMemberOfAny(props.groups);
+  if (!intersects) return props.children;
+  return null;
+};
+
+var WhenHasAllClaims = function WhenHasAllClaims(props) {
+  var _useRtrOktaAuth = useRtrOktaAuth(),
+      hasAllClaims = _useRtrOktaAuth.hasAllClaims,
+      authCtx = _useRtrOktaAuth.authCtx;
+
+  var isAuthenticated = authCtx.authState.isAuthenticated;
+  if (!isAuthenticated) return null;
+  var intersects = hasAllClaims(props.claims);
+
+  if (intersects) {
+    return props.children;
+  }
+
+  return null;
+};
+
+var WhenHasClaim = function WhenHasClaim(props) {
+  var claim = props.claim,
+      rest = _objectWithoutPropertiesLoose(props, ["claim"]);
+
+  return React__default.createElement(WhenHasAllClaims, Object.assign({
+    claims: [claim]
+  }, rest));
+};
+
+var WhenHasAnyClaims = function WhenHasAnyClaims(props) {
+  var _useRtrOktaAuth = useRtrOktaAuth(),
+      hasAnyClaims = _useRtrOktaAuth.hasAnyClaims,
+      authCtx = _useRtrOktaAuth.authCtx;
+
+  var isAuthenticated = authCtx.authState.isAuthenticated;
+  if (!isAuthenticated) return null;
+  var intersects = hasAnyClaims(props.claims);
+
+  if (intersects) {
+    return props.children;
+  }
+
+  return null;
+};
+
+var WhenNotHasAllClaims = function WhenNotHasAllClaims(props) {
+  var _useRtrOktaAuth = useRtrOktaAuth(),
+      hasAllClaims = _useRtrOktaAuth.hasAllClaims,
+      authCtx = _useRtrOktaAuth.authCtx;
+
+  var isAuthenticated = authCtx.authState.isAuthenticated;
+  if (!isAuthenticated) return props.children;
+  var intersects = hasAllClaims(props.claims);
+  if (!intersects) return props.children;
+  return null;
+};
+
+var WhenNotHasClaim = function WhenNotHasClaim(props) {
+  var claim = props.claim,
+      rest = _objectWithoutPropertiesLoose(props, ["claim"]);
+
+  return React__default.createElement(WhenNotHasAllClaims, Object.assign({
+    claims: [claim]
+  }, rest));
+};
+
+var WhenNotHasAnyClaims = function WhenNotHasAnyClaims(props) {
+  var _useRtrOktaAuth = useRtrOktaAuth(),
+      hasAnyClaims = _useRtrOktaAuth.hasAnyClaims,
+      authCtx = _useRtrOktaAuth.authCtx;
+
+  var isAuthenticated = authCtx.authState.isAuthenticated;
+  if (!isAuthenticated) return props.children;
+  var intersects = hasAnyClaims(props.claims);
+  if (!intersects) return props.children;
+  return null;
+};
+
+var RouteWhenHasAllClaims = function RouteWhenHasAllClaims(props) {
+  var claims = props.claims,
+      component = props.component,
+      unauthenticatedComponent = props.unauthenticatedComponent,
+      unauthorizedComponent = props.unauthorizedComponent,
+      rest = _objectWithoutPropertiesLoose(props, ["claims", "component", "unauthenticatedComponent", "unauthorizedComponent"]);
+
+  var _useRtrOktaAuth = useRtrOktaAuth(),
+      hasAllClaims = _useRtrOktaAuth.hasAllClaims,
+      authCtx = _useRtrOktaAuth.authCtx;
+
+  var isAuthenticated = authCtx.authState.isAuthenticated;
+  var intersects = hasAllClaims(claims);
+  var compToRender = isAuthenticated ? intersects ? component : !!unauthorizedComponent ? unauthorizedComponent : DefaultUnauthorized : !!unauthenticatedComponent ? unauthenticatedComponent : DefaultUnAuthenticated;
+  return React__default.createElement(Route, Object.assign({
+    component: compToRender
+  }, rest));
+};
+
+var RouteWhenHasClaim = function RouteWhenHasClaim(props) {
+  var claim = props.claim,
+      rest = _objectWithoutPropertiesLoose(props, ["claim"]);
+
+  return React__default.createElement(RouteWhenHasAllClaims, Object.assign({
+    claims: [claim]
+  }, rest));
+};
+
+var RouteWhenHasAnyClaims = function RouteWhenHasAnyClaims(props) {
+  var claims = props.claims,
+      component = props.component,
+      unauthenticatedComponent = props.unauthenticatedComponent,
+      unauthorizedComponent = props.unauthorizedComponent,
+      rest = _objectWithoutPropertiesLoose(props, ["claims", "component", "unauthenticatedComponent", "unauthorizedComponent"]);
+
+  var _useRtrOktaAuth = useRtrOktaAuth(),
+      hasAnyClaims = _useRtrOktaAuth.hasAnyClaims,
+      authCtx = _useRtrOktaAuth.authCtx;
+
+  var isAuthenticated = authCtx.authState.isAuthenticated;
+  var intersects = hasAnyClaims(claims);
+  var compToRender = isAuthenticated ? intersects ? component : !!unauthorizedComponent ? unauthorizedComponent : DefaultUnauthorized : !!unauthenticatedComponent ? unauthenticatedComponent : DefaultUnAuthenticated;
+  return React__default.createElement(Route, Object.assign({
+    component: compToRender
+  }, rest));
+};
+
+function useWhen() {
+  var isAuthenticated = useRtrOktaAuth().authCtx.authState.isAuthenticated;
+  return {
+    when: when
+  };
+
+  function when(fn) {
+    if (!isAuthenticated) return false;
+    return fn();
+  }
+}
+
+var When = function When(props) {
+  var _useWhen = useWhen(),
+      when = _useWhen.when;
+
+  if (when(props.isTrue)) return props.children;
+  return null;
+};
+
+var RouteWhen = function RouteWhen(props) {
+  var component = props.component,
+      unauthenticatedComponent = props.unauthenticatedComponent,
+      unauthorizedComponent = props.unauthorizedComponent,
+      isTrue = props.isTrue,
+      rest = _objectWithoutPropertiesLoose(props, ["component", "unauthenticatedComponent", "unauthorizedComponent", "isTrue"]);
+
+  var isAuthenticated = useRtrOktaAuth().authCtx.authState.isAuthenticated;
+  var hasAccess = isTrue();
+  var compToRender = isAuthenticated ? hasAccess ? component : !!unauthorizedComponent ? unauthorizedComponent : DefaultUnauthorized : !!unauthenticatedComponent ? unauthenticatedComponent : DefaultUnAuthenticated;
+  return React__default.createElement(Route, Object.assign({
+    component: compToRender
+  }, rest));
+};
+
+var RtrOktaAuth = function RtrOktaAuth(_ref) {
+  var authCtx = _ref.authCtx,
+      children = _ref.children;
+  var rtrOktaUserCtx = useRtrOktaUserCtx({
+    authCtx: authCtx
+  });
+  return createElement(RtrOktaAuthContext.Provider, {
+    value: rtrOktaUserCtx
+  }, children);
+};
+
+var RouteWhenMemberOf = function RouteWhenMemberOf(props) {
+  var group = props.group,
+      rest = _objectWithoutPropertiesLoose(props, ["group"]);
+
+  return React__default.createElement(RouteWhenMemberOfAll, Object.assign({
+    groups: [group]
+  }, rest));
+};
+
+export { RouteWhen, RouteWhenHasAllClaims, RouteWhenHasAnyClaims, RouteWhenHasClaim, RouteWhenMemberOf, RouteWhenMemberOfAll, RouteWhenMemberOfAny, RtrOktaAuth, When, WhenHasAllClaims, WhenHasAnyClaims, WhenHasClaim, WhenMemberOf, WhenMemberOfAll, WhenMemberOfAny, WhenNotHasAllClaims, WhenNotHasAnyClaims, WhenNotHasClaim, WhenNotMemberOf, WhenNotMemberOfAll, WhenNotMemberOfAny, useRtrOktaAuth, useWhen };
 //# sourceMappingURL=rtr-react-okta-auth.esm.js.map

@@ -7,6 +7,7 @@ interface IRtrOktaAuthUserCtx {
     user: any | null;
     userGroups: string[];
     fetchingUserInfo: boolean;
+    authCtx: IOktaContext;
 }
 export declare function useRtrOktaUserCtx({ authCtx }: Props): IRtrOktaAuthUserCtx;
 export declare const RtrOktaAuthContext: React.Context<IRtrOktaAuthUserCtx>;
