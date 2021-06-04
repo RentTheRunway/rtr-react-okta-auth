@@ -32,6 +32,10 @@ import useRtrOktaAuth from './useRtrOktaAuth';
 import IRtrOktaAuth from './models/IRtrOktaAuth';
 import RouteWhenMemberOf from './RouteWhenMemberOf';
 
+const WhenAuthenticatedAnd = When;
+const RouteWhenAuthenticatedAnd = RouteWhen;
+const useWhenAuthenticatedAnd = useWhen;
+
 export {
   //Context
   RtrOktaAuth,
@@ -71,4 +75,8 @@ export {
   IWhenProps,
   IRouteWhenProps,
   IUseWhen,
+  //WhenAuthenticatedAnd
+  WhenAuthenticatedAnd,
+  RouteWhenAuthenticatedAnd,
+  useWhenAuthenticatedAnd,
 };

@@ -1286,7 +1286,12 @@ var RouteWhenMemberOf = function RouteWhenMemberOf(props) {
   }, rest));
 };
 
+var WhenAuthenticatedAnd = When;
+var RouteWhenAuthenticatedAnd = RouteWhen;
+var useWhenAuthenticatedAnd = useWhen;
+
 exports.RouteWhen = RouteWhen;
+exports.RouteWhenAuthenticatedAnd = RouteWhenAuthenticatedAnd;
 exports.RouteWhenHasAllClaims = RouteWhenHasAllClaims;
 exports.RouteWhenHasAnyClaims = RouteWhenHasAnyClaims;
 exports.RouteWhenHasClaim = RouteWhenHasClaim;
@@ -1295,6 +1300,7 @@ exports.RouteWhenMemberOfAll = RouteWhenMemberOfAll;
 exports.RouteWhenMemberOfAny = RouteWhenMemberOfAny;
 exports.RtrOktaAuth = RtrOktaAuth;
 exports.When = When;
+exports.WhenAuthenticatedAnd = WhenAuthenticatedAnd;
 exports.WhenHasAllClaims = WhenHasAllClaims;
 exports.WhenHasAnyClaims = WhenHasAnyClaims;
 exports.WhenHasClaim = WhenHasClaim;
@@ -1309,4 +1315,5 @@ exports.WhenNotMemberOfAll = WhenNotMemberOfAll;
 exports.WhenNotMemberOfAny = WhenNotMemberOfAny;
 exports.useRtrOktaAuth = useRtrOktaAuth;
 exports.useWhen = useWhen;
+exports.useWhenAuthenticatedAnd = useWhenAuthenticatedAnd;
 //# sourceMappingURL=rtr-react-okta-auth.cjs.development.js.map

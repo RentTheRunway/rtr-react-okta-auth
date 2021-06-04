@@ -1279,5 +1279,9 @@ var RouteWhenMemberOf = function RouteWhenMemberOf(props) {
   }, rest));
 };
 
-export { RouteWhen, RouteWhenHasAllClaims, RouteWhenHasAnyClaims, RouteWhenHasClaim, RouteWhenMemberOf, RouteWhenMemberOfAll, RouteWhenMemberOfAny, RtrOktaAuth, When, WhenHasAllClaims, WhenHasAnyClaims, WhenHasClaim, WhenMemberOf, WhenMemberOfAll, WhenMemberOfAny, WhenNotHasAllClaims, WhenNotHasAnyClaims, WhenNotHasClaim, WhenNotMemberOf, WhenNotMemberOfAll, WhenNotMemberOfAny, useRtrOktaAuth, useWhen };
+var WhenAuthenticatedAnd = When;
+var RouteWhenAuthenticatedAnd = RouteWhen;
+var useWhenAuthenticatedAnd = useWhen;
+
+export { RouteWhen, RouteWhenAuthenticatedAnd, RouteWhenHasAllClaims, RouteWhenHasAnyClaims, RouteWhenHasClaim, RouteWhenMemberOf, RouteWhenMemberOfAll, RouteWhenMemberOfAny, RtrOktaAuth, When, WhenAuthenticatedAnd, WhenHasAllClaims, WhenHasAnyClaims, WhenHasClaim, WhenMemberOf, WhenMemberOfAll, WhenMemberOfAny, WhenNotHasAllClaims, WhenNotHasAnyClaims, WhenNotHasClaim, WhenNotMemberOf, WhenNotMemberOfAll, WhenNotMemberOfAny, useRtrOktaAuth, useWhen, useWhenAuthenticatedAnd };
 //# sourceMappingURL=rtr-react-okta-auth.esm.js.map

@@ -1,3 +1,4 @@
+/// <reference types="react" />
 import RouteWhenMemberOfAll from './RouteWhenMemberOfAll';
 import RouteWhenMemberOfAny from './RouteWhenMemberOfAny';
 import WhenMemberOf from './WhenMemberOf';
@@ -31,4 +32,7 @@ import RtrOktaAuth from './RtrOktaAuth';
 import useRtrOktaAuth from './useRtrOktaAuth';
 import IRtrOktaAuth from './models/IRtrOktaAuth';
 import RouteWhenMemberOf from './RouteWhenMemberOf';
-export { RtrOktaAuth, IRtrOktaAuth, useRtrOktaAuth, WhenMemberOf, WhenMemberOfAny, WhenMemberOfAll, WhenNotMemberOf, WhenNotMemberOfAny, WhenNotMemberOfAll, RouteWhenMemberOf, RouteWhenMemberOfAny, RouteWhenMemberOfAll, IWhenMemberOfProps, IRouteWhenMemberOfProps, WhenHasClaim, WhenHasAnyClaims, WhenHasAllClaims, RouteWhenHasClaim, WhenNotHasClaim, WhenNotHasAnyClaims, WhenNotHasAllClaims, RouteWhenHasAnyClaims, RouteWhenHasAllClaims, IWhenHasClaimProps, IWhenHasClaimsProps, IRouteWhenHasClaimProps, IRouteWhenHasClaimsProps, When, RouteWhen, useWhen, IWhenProps, IRouteWhenProps, IUseWhen, };
+declare const WhenAuthenticatedAnd: import("react").FC<IWhenProps>;
+declare const RouteWhenAuthenticatedAnd: import("react").FC<IRouteWhenProps>;
+declare const useWhenAuthenticatedAnd: typeof useWhen;
+export { RtrOktaAuth, IRtrOktaAuth, useRtrOktaAuth, WhenMemberOf, WhenMemberOfAny, WhenMemberOfAll, WhenNotMemberOf, WhenNotMemberOfAny, WhenNotMemberOfAll, RouteWhenMemberOf, RouteWhenMemberOfAny, RouteWhenMemberOfAll, IWhenMemberOfProps, IRouteWhenMemberOfProps, WhenHasClaim, WhenHasAnyClaims, WhenHasAllClaims, RouteWhenHasClaim, WhenNotHasClaim, WhenNotHasAnyClaims, WhenNotHasAllClaims, RouteWhenHasAnyClaims, RouteWhenHasAllClaims, IWhenHasClaimProps, IWhenHasClaimsProps, IRouteWhenHasClaimProps, IRouteWhenHasClaimsProps, When, RouteWhen, useWhen, IWhenProps, IRouteWhenProps, IUseWhen, WhenAuthenticatedAnd, RouteWhenAuthenticatedAnd, useWhenAuthenticatedAnd, };
