@@ -1,6 +1,7 @@
 import { useOktaAuth } from '@okta/okta-react';
 import * as React from 'react';
 import { useRtrOktaAuth } from '../../src';
+import logo from './RTR_CLOSET_ICON_WHITE.png';
 
 interface Props {}
 
@@ -17,8 +18,9 @@ const NavBar = (props: Props) => {
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
       <div className="container-fluid">
-        <a className="navbar-brand" href="#">
-          Navbar
+        <a className="navbar-brand rtr-logo" href="#">
+          <span className="sr-only">Rent The Runway</span>
+          <img alt="Rent The Runway" src={logo} />
         </a>
         <button
           className="navbar-toggler"

@@ -8,6 +8,7 @@ import {
   WhenMemberOfAny,
 } from '../../src';
 import NavBar from '../components/NavBar';
+import logo from '../components/RTR_CLOSET_ICON_WHITE.png';
 
 function BlogLinks() {
   return (
@@ -27,6 +28,7 @@ function BlogLinks() {
 function DocLinks() {
   return (
     <div className="alert alert-primary">
+      <h4>And that's the quick intro... there's lots more</h4>
       <p>
         Click{' '}
         <a
@@ -62,6 +64,27 @@ const Home = () => {
       <NavBar />
 
       <div className="container">
+        <section className="mt-4">
+          <div className="d-flex align-items-center">
+            <div className="bg-primary mr-4">
+              <img
+                style={{ height: '50px' }}
+                alt="Rent The Runway"
+                src={logo}
+              />
+            </div>
+            <div>
+              Rent the Runway -{' '}
+              <a
+                href="https://github.com/RentTheRunway/rtr-react-okta-auth"
+                target="_blank"
+              >
+                rtr-react-okta-auth
+              </a>
+            </div>
+          </div>
+        </section>
+
         <div className="alert alert-primary my-4">
           <p>
             This app <strong>requires</strong> that an Okta instance be setup
@@ -93,194 +116,200 @@ const Home = () => {
           </a>
         </div>
 
-        <DocLinks />
+        <hr className="my-4" />
 
-        <h1>User Details</h1>
-        <table className="table w-auto">
-          <thead>
-            <tr>
-              <th scope="col">User</th>
-              <th scope="col">Groups</th>
-              <th scope="col">Claims</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>{displayName}</td>
-              <td>
-                {groups.map(g => (
-                  <span key={g} className="badge bg-secondary mr-1">
-                    {g}
-                  </span>
-                ))}
-              </td>
-              <td>
-                {claims.map(g => (
-                  <span key={g} className="badge bg-secondary mr-1">
-                    {g}
-                  </span>
-                ))}
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <section>
+          <div className="text-muted mb-4">User Details</div>
+          <table className="table w-auto">
+            <thead>
+              <tr>
+                <th scope="col">User</th>
+                <th scope="col">Groups</th>
+                <th scope="col">Claims</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>{displayName}</td>
+                <td>
+                  {groups.map(g => (
+                    <span key={g} className="badge bg-secondary mr-1">
+                      {g}
+                    </span>
+                  ))}
+                </td>
+                <td>
+                  {claims.map(g => (
+                    <span key={g} className="badge bg-secondary mr-1">
+                      {g}
+                    </span>
+                  ))}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
 
         <hr className="my-4" />
 
-        <h1>Demo App</h1>
+        <section>
+          <h2>
+            Limit <code>&lt;Route /&gt;</code> access based on Okta User Groups
+          </h2>
+          <div className="text-muted mb-2">
+            Click the links to see if you have access
+          </div>
+          <div>
+            <ul className="list-group">
+              <li className="list-group-item">
+                <h4>Blog Title 1</h4>
+                <p>
+                  Lorem ipsum dolor sit amet consectetur adipisicing elit......
+                </p>
+                <BlogLinks />
+              </li>
+              <li className="list-group-item">
+                <h4>Blog Title 2</h4>
+                <p>
+                  Lorem ipsum dolor sit amet consectetur adipisicing elit......
+                </p>
+                <BlogLinks />
+              </li>
+              <li className="list-group-item">
+                <h4>Blog Title 3</h4>
+                <p>
+                  Lorem ipsum dolor sit amet consectetur adipisicing elit......
+                </p>
+                <BlogLinks />
+              </li>
+            </ul>
+          </div>
+        </section>
 
-        <h2>
-          Limit <code>&lt;Route /&gt;</code> access based on Okta User Groups
-        </h2>
-        <div>
-          <ul className="list-group">
-            <li className="list-group-item">
-              <h4>Blog Title 1</h4>
-              <p>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit......
-              </p>
-              <BlogLinks />
-            </li>
-            <li className="list-group-item">
-              <h4>Blog Title 2</h4>
-              <p>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit......
-              </p>
-              <BlogLinks />
-            </li>
-            <li className="list-group-item">
-              <h4>Blog Title 3</h4>
-              <p>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit......
-              </p>
-              <BlogLinks />
-            </li>
-          </ul>
-        </div>
+        <section className="my-4">
+          <div className="text-muted">
+            Errr... so should we not be hiding the update links?
+          </div>
+          <div className="text-muted">Of course...</div>
+        </section>
 
-        <div className="my-4">
-          <blockquote className="blockquote">
-            <footer className="blockquote-footer">
-              Errr... so should we not be hiding the update links?
-            </footer>
-            <footer className="blockquote-footer">Of course...</footer>
-          </blockquote>
-        </div>
-
-        <h2 className="mt-4">Show and Hide JSX based on Okta User Groups</h2>
-        <div className="card border-primary mb-3">
-          <div className="card-header">Read Blog Link</div>
-          <div className="card-body">
-            <h4 className="card-title">
-              (Okta groups <code>blog_read</code> or <code>blog_admin</code>{' '}
-              only)
-            </h4>
-            <p className="card-text">
-              Only users in Okta Groups <code>blog_read</code> or{' '}
-              <code>blog_admin</code> can see the below link
-            </p>
-            <div className="card-text">
-              <pre>
-                <code>
-                  {`<WhenMemberOfAny groups={["blog_read", "blog_admin"]}>
+        <section className="my-4">
+          <h2>Show and Hide JSX based on Okta User Groups</h2>
+          <div className="card border-primary mb-3">
+            <div className="card-header">Read Blog Link</div>
+            <div className="card-body">
+              <h4 className="card-title">
+                (Okta groups <code>blog_read</code> or <code>blog_admin</code>{' '}
+                only)
+              </h4>
+              <p className="card-text">
+                Only users in Okta Groups <code>blog_read</code> or{' '}
+                <code>blog_admin</code> can see the below link
+              </p>
+              <div className="card-text">
+                <pre>
+                  <code>
+                    {`<WhenMemberOfAny groups={["blog_read", "blog_admin"]}>
     <Link to="/read">Read Blog</Link>
 </WhenMemberOfAny>`}
-                </code>
-              </pre>
+                  </code>
+                </pre>
+              </div>
+              <p>
+                LINK:{' '}
+                <WhenMemberOfAny groups={['blog_read', 'blog_admin']}>
+                  <Link to="/read">Read Blog</Link>
+                </WhenMemberOfAny>
+              </p>
             </div>
-            <p>
-              LINK:{' '}
-              <WhenMemberOfAny groups={['blog_read', 'blog_admin']}>
-                <Link to="/read">Read Blog</Link>
-              </WhenMemberOfAny>
-            </p>
           </div>
-        </div>
-
-        <div className="card border-danger mb-3">
-          <div className="card-header">Update Blog Link</div>
-          <div className="card-body">
-            <h4 className="card-title">
-              (Okta group <code>blog_admin</code> only)
-            </h4>
-            <p className="card-text">
-              Only users in Okta Group <code>blog_admin</code> can see the below
-              link
-            </p>
-            <div className="card-text">
-              <pre>
-                <code>
-                  {`<WhenMemberOf group="blog_admin">
+          <div className="card border-danger mb-3">
+            <div className="card-header">Update Blog Link</div>
+            <div className="card-body">
+              <h4 className="card-title">
+                (Okta group <code>blog_admin</code> only)
+              </h4>
+              <p className="card-text">
+                Only users in Okta Group <code>blog_admin</code> can see the
+                below link
+              </p>
+              <div className="card-text">
+                <pre>
+                  <code>
+                    {`<WhenMemberOf group="blog_admin">
     <Link to="/admin">Update Blog</Link>
 </WhenMemberOf>`}
-                </code>
-              </pre>
+                  </code>
+                </pre>
+              </div>
+              <p>
+                LINK:{' '}
+                <WhenMemberOf group="blog_admin">
+                  <Link to="/admin">Update Blog</Link>
+                </WhenMemberOf>
+              </p>
             </div>
-            <p>
-              LINK:{' '}
-              <WhenMemberOf group="blog_admin">
-                <Link to="/admin">Update Blog</Link>
-              </WhenMemberOf>
-            </p>
           </div>
-        </div>
+        </section>
 
-        <h2 className="mt-4">Show and Hide JSX based on Okta User Claims</h2>
-        <div className="card border-primary mb-3">
-          <div className="card-header">Read Blog Link</div>
-          <div className="card-body">
-            <h4 className="card-title">
-              (Okta Claim <code>CanDoA</code> or <code>CanDoB</code> only)
-            </h4>
-            <div className="card-text">
-              Only users with Okta Claims <code>CanDoA</code> or{' '}
-              <code>CanDoB</code> can see the below link
-            </div>
-            <div className="card-text">
-              <pre>
-                <code>
-                  {`<WhenHasAnyClaim claims={["CanDoA", "CanDoB"]}>
+        <section className="my-4">
+          <h2>Show and Hide JSX based on Okta User Claims</h2>
+          <div className="card border-primary mb-3">
+            <div className="card-header">Read Blog Link</div>
+            <div className="card-body">
+              <h4 className="card-title">
+                (Okta Claim <code>CanDoA</code> or <code>CanDoB</code> only)
+              </h4>
+              <div className="card-text">
+                Only users with Okta Claims <code>CanDoA</code> or{' '}
+                <code>CanDoB</code> can see the below link
+              </div>
+              <div className="card-text">
+                <pre>
+                  <code>
+                    {`<WhenHasAnyClaim claims={["CanDoA", "CanDoB"]}>
     <Link to="/read">Read Blog</Link>
 </WhenHasAnyClaim>`}
-                </code>
-              </pre>
+                  </code>
+                </pre>
+              </div>
+              <p>
+                LINK:{' '}
+                <WhenHasAnyClaims claims={['CanDoA', 'CanDoB']}>
+                  <Link to="/read">Read Blog</Link>
+                </WhenHasAnyClaims>
+              </p>
             </div>
-            <p>
-              LINK:{' '}
-              <WhenHasAnyClaims claims={['CanDoA', 'CanDoB']}>
-                <Link to="/read">Read Blog</Link>
-              </WhenHasAnyClaims>
-            </p>
           </div>
-        </div>
 
-        <div className="card border-danger mb-3">
-          <div className="card-header">Update Blog Link</div>
-          <div className="card-body">
-            <h4 className="card-title">
-              (Okta Claim <code>blog_admin</code> only)
-            </h4>
-            <div className="card-text">
-              Only users with Okta Claim <code>blog_admin</code> can see the
-              below link
-            </div>
-            <div className="card-text">
-              <pre>
-                <code>
-                  {`<WhenHasClaim claim="CanDoB">
+          <div className="card border-danger mb-3">
+            <div className="card-header">Update Blog Link</div>
+            <div className="card-body">
+              <h4 className="card-title">
+                (Okta Claim <code>blog_admin</code> only)
+              </h4>
+              <div className="card-text">
+                Only users with Okta Claim <code>blog_admin</code> can see the
+                below link
+              </div>
+              <div className="card-text">
+                <pre>
+                  <code>
+                    {`<WhenHasClaim claim="CanDoB">
     <Link to="/admin">Update Blog</Link>
 </WhenHasClaim>`}
-                </code>
-              </pre>
+                  </code>
+                </pre>
+              </div>
+              <p>
+                LINK:{' '}
+                <WhenHasClaim claim="CanDoB">
+                  <Link to="/admin">Update Blog</Link>
+                </WhenHasClaim>
+              </p>
             </div>
-            <p>
-              LINK:{' '}
-              <WhenHasClaim claim="CanDoB">
-                <Link to="/admin">Update Blog</Link>
-              </WhenHasClaim>
-            </p>
           </div>
-        </div>
+        </section>
 
         <hr className="my-4" />
 

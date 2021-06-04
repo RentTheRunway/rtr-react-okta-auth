@@ -31,15 +31,15 @@ const AppRouterAware = () => {
     history.replace(toRelativeUrl(originalUri, window.location.origin));
   };
 
-  const oktaConfig = new OktaAuth(config);
-
-  if (appSetup.hasAppSetup)
+  if (appSetup.hasAppSetup) {
+    const oktaConfig = new OktaAuth(config);
     return (
       <Security oktaAuth={oktaConfig} restoreOriginalUri={restoreOriginalUri}>
         <AppRoutes />
         <Route path="/login/callback" component={LoginCallback} />
       </Security>
     );
+  }
 
   return <AppSetup appSetup={appSetup} />;
 };
