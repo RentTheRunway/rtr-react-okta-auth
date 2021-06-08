@@ -58,8 +58,8 @@ function DocLinks() {
 }
 
 const Home = () => {
-  const { user, fetchingUserInfo } = useRtrOktaAuth();
-  const displayName = getDisplayName(user, fetchingUserInfo);
+  const { user, authorizationStateKnown } = useRtrOktaAuth();
+  const displayName = getDisplayName(user, authorizationStateKnown);
   const groups = !!user ? user.groups : [];
   const claims = getClaims(user);
 
@@ -362,11 +362,11 @@ const Home = () => {
     </>
   );
 
-  function getDisplayName(user: any | null, fetchingUserInfo: boolean) {
-    const displayName = fetchingUserInfo
-      ? '...'
-      : !!user
-      ? `${user.given_name} ${user.family_name}`
+  function getDisplayName(user: any | null, authorizationStateKnown: boolean) {
+    const displayName = authorizationStateKnown
+      ? !!user
+        ? '...'
+        : `${user.given_name} ${user.family_name}`
       : '';
     return displayName;
   }

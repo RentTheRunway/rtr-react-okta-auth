@@ -8,11 +8,11 @@ interface Props {}
 const NavBar = (props: Props) => {
   const { authState, oktaAuth } = useOktaAuth();
   const { isAuthenticated } = authState;
-  const { user, fetchingUserInfo } = useRtrOktaAuth();
-  const displayName = fetchingUserInfo
-    ? '...'
-    : !!user
-    ? `${user.given_name} ${user.family_name}`
+  const { user, authorizationStateKnown } = useRtrOktaAuth();
+  const displayName = authorizationStateKnown
+    ? !!user
+      ? '...'
+      : `${user.given_name} ${user.family_name}`
     : '';
 
   return (
