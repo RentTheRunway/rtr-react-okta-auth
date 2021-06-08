@@ -6,6 +6,7 @@ import {
   RenderResult,
   act,
   screen,
+  waitFor,
 } from '@testing-library/react';
 import { IOktaContext } from '@okta/okta-react/bundles/types/OktaContext';
 
@@ -99,5 +100,26 @@ describe('<WhenHasAllClaims /> / <WhenNotHasAllClaims />', () => {
     });
     expect(screen.queryByTestId(accessContent)).toBeFalsy();
     expect(screen.queryByTestId(noAccessContent)).toBeTruthy();
+  });
+
+  it('does not render until user state is known', async () => {
+    let resolveUser: any;
+    const mockAuthContext = getMockUseOktaAuth();
+    mockAuthContext.oktaAuth.token.getUserInfo = () =>
+      new Promise(resolve => {
+        resolveUser = resolve;
+      });
+    const jsx = getJsx(mockAuthContext, Object.keys(userClaims));
+    await act(async () => {
+      render(jsx);
+    });
+    expect(screen.queryByTestId(accessContent)).toBeFalsy();
+    expect(screen.queryByTestId(noAccessContent)).toBeFalsy();
+
+    resolveUser!(mockUser);
+    await waitFor(() => {
+      expect(screen.queryByTestId(accessContent)).toBeTruthy();
+    });
+    expect(screen.queryByTestId(noAccessContent)).toBeFalsy();
   });
 });

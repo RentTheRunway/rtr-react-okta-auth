@@ -7,9 +7,10 @@ import {
   render,
   RenderResult,
   screen,
+  waitFor,
 } from '@testing-library/react';
 
-describe('<WhenMemberOfAny />', () => {
+describe('<WhenMemberOfAll /> / <WhenNotMemberOfAll />', () => {
   let mockIsAuthenticated = true;
   const userGroups = ['one', 'two'];
   const origMockUser = { sub: '', groups: userGroups };
@@ -117,5 +118,26 @@ describe('<WhenMemberOfAny />', () => {
     });
     expect(screen.queryByTestId(accessContent)).toBeFalsy();
     expect(screen.queryByTestId(noAccessContent)).toBeTruthy();
+  });
+
+  it('does not render until user state is known', async () => {
+    let resolveUser: any;
+    const mockAuthContext = getMockUseOktaAuth();
+    mockAuthContext.oktaAuth.token.getUserInfo = () =>
+      new Promise(resolve => {
+        resolveUser = resolve;
+      });
+    const jsx = getJsx(mockAuthContext, userGroups);
+    await act(async () => {
+      render(jsx);
+    });
+    expect(screen.queryByTestId(accessContent)).toBeFalsy();
+    expect(screen.queryByTestId(noAccessContent)).toBeFalsy();
+
+    resolveUser!(mockUser);
+    await waitFor(() => {
+      expect(screen.queryByTestId(accessContent)).toBeTruthy();
+    });
+    expect(screen.queryByTestId(noAccessContent)).toBeFalsy();
   });
 });

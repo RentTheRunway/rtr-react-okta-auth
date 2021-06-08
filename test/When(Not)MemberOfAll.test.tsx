@@ -5,14 +5,16 @@ import {
   render,
   RenderResult,
   screen,
+  waitFor,
 } from '@testing-library/react';
 import React from 'react';
 import { RtrOktaAuth, WhenMemberOfAll, WhenNotMemberOfAll } from '../src';
 
-describe('<WhenMemberOfAll />', () => {
+describe('<WhenMemberOfAll /> / <WhenNotMemberOfAll />', () => {
   let mockIsAuthenticated = true;
   const userGroups = ['one', 'two'];
-  let mockUser = { sub: '', groups: userGroups };
+  const mockUserOrig = { sub: '', groups: userGroups };
+  let mockUser = { ...mockUserOrig };
   const accessContent = 'accessHtmlContent';
   const noAccessContent = 'noAccessHtmlContent';
 
@@ -20,6 +22,7 @@ describe('<WhenMemberOfAll />', () => {
     cleanup();
     jest.resetAllMocks();
     mockIsAuthenticated = true;
+    mockUser = { ...mockUserOrig };
   });
 
   function getMockUseOktaAuth(): IOktaContext {
@@ -120,5 +123,27 @@ describe('<WhenMemberOfAll />', () => {
     });
     expect(screen.queryByTestId(accessContent)).toBeFalsy();
     expect(screen.queryByTestId(noAccessContent)).toBeTruthy();
+  });
+
+  it('does not render until user state is known', async () => {
+    mockIsAuthenticated = true;
+    let resolveUser: any;
+    const mockAuthContext = getMockUseOktaAuth();
+    mockAuthContext.oktaAuth.token.getUserInfo = () =>
+      new Promise(resolve => {
+        resolveUser = resolve;
+      });
+    const jsx = getJsx(mockAuthContext, userGroups);
+    await act(async () => {
+      render(jsx);
+    });
+    expect(screen.queryByTestId(accessContent)).toBeFalsy();
+    expect(screen.queryByTestId(noAccessContent)).toBeFalsy();
+
+    resolveUser!(mockUser);
+    await waitFor(() => {
+      expect(screen.queryByTestId(accessContent)).toBeTruthy();
+    });
+    expect(screen.queryByTestId(noAccessContent)).toBeFalsy();
   });
 });
