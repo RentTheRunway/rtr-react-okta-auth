@@ -2,7 +2,7 @@ import { OktaAuth, toRelativeUrl } from '@okta/okta-auth-js';
 import { LoginCallback, Security } from '@okta/okta-react';
 import * as React from 'react';
 import { BrowserRouter as Router, Route, useHistory } from 'react-router-dom';
-import AppRoutes from './AppRoutes';
+import AppOktaAware from './AppOktaAware';
 import DemoAppSetup from './DemoAppSetup';
 import useDemoAppSetup from './useDemoAppSetup';
 
@@ -35,7 +35,7 @@ const AppRouterAware = () => {
     const oktaConfig = new OktaAuth(config);
     return (
       <Security oktaAuth={oktaConfig} restoreOriginalUri={restoreOriginalUri}>
-        <AppRoutes />
+        <AppOktaAware />
         <Route path="/login/callback" component={LoginCallback} />
       </Security>
     );
@@ -44,10 +44,10 @@ const AppRouterAware = () => {
   return <DemoAppSetup demoAppSetup={demoAppSetup} />;
 };
 
-const DemoApp = () => (
+const App = () => (
   <Router>
     <AppRouterAware />
   </Router>
 );
 
-export default DemoApp;
+export default App;
