@@ -41,6 +41,7 @@ const AppRouterAware = () => {
     );
   }
 
+  //Collect Okta Issuer and Client ID
   return <DemoAppSetup demoAppSetup={demoAppSetup} />;
 };
 

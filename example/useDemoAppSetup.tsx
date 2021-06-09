@@ -46,7 +46,7 @@ export default function useDemoAppSetup(): IAppSetup {
     e.preventDefault();
     const issuerVal = issuer.trim();
     const clientIdVal = clientId.trim();
-    const valid = issuerVal !== '' && clientIdVal !== '';
+    const valid = isUrl(issuerVal) && clientIdVal !== '';
     if (valid) {
       setAppDetails({ issuer: issuerVal, clientId: clientIdVal });
     }
@@ -68,5 +68,14 @@ export default function useDemoAppSetup(): IAppSetup {
 
   function hasAppDetails(): boolean {
     return !!localStorage.getItem(lsKey);
+  }
+
+  function isUrl(url: string): boolean {
+    try {
+      new URL(url);
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 }
