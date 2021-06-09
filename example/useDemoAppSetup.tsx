@@ -15,7 +15,7 @@ export interface IAppSetup {
   hasAppSetup: boolean;
 }
 
-export default function useAppSetup(): IAppSetup {
+export default function useDemoAppSetup(): IAppSetup {
   const lsKey = 'rtr-okta-demo-app-config';
   const appDetails = getAppDetails();
   const [issuer, setIssuer] = useState(appDetails.issuer);

@@ -1,11 +1,15 @@
 import * as React from 'react';
-import { IAppSetup } from './useAppSetup';
+import { IAppSetup } from './useDemoAppSetup';
+
+/*
+The purpose of this is to collect the Okta IssuerId and clientId from the user
+*/
 
 interface Props {
-  appSetup: IAppSetup;
+  demoAppSetup: IAppSetup;
 }
 
-const AppSetup: React.FC<Props> = ({ appSetup }) => {
+const DemoAppSetup: React.FC<Props> = ({ demoAppSetup: appSetup }) => {
   return (
     <div className="container">
       <div>
@@ -81,4 +85,4 @@ const AppSetup: React.FC<Props> = ({ appSetup }) => {
   );
 };
 
-export default AppSetup;
+export default DemoAppSetup;

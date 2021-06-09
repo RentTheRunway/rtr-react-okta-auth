@@ -3,15 +3,23 @@ import { LoginCallback, Security } from '@okta/okta-react';
 import * as React from 'react';
 import { BrowserRouter as Router, Route, useHistory } from 'react-router-dom';
 import AppRoutes from './AppRoutes';
-import AppSetup from './AppSetup';
-import useAppSetup from './useAppSetup';
+import DemoAppSetup from './DemoAppSetup';
+import useDemoAppSetup from './useDemoAppSetup';
 
 const AppRouterAware = () => {
-  const appSetup = useAppSetup();
+  const demoAppSetup = useDemoAppSetup();
+
+  const history = useHistory();
+  const restoreOriginalUri = async (
+    _oktaAuth: OktaAuth,
+    originalUri: string
+  ) => {
+    history.replace(toRelativeUrl(originalUri, window.location.origin));
+  };
 
   const config = {
-    issuer: appSetup.issuer,
-    clientId: appSetup.clientId,
+    issuer: demoAppSetup.issuer,
+    clientId: demoAppSetup.clientId,
     redirectUri: `${window.location.origin}/login/callback`,
     pkce: true,
     responseType: 'token id_token',
@@ -23,15 +31,7 @@ const AppRouterAware = () => {
     },
   };
 
-  const history = useHistory();
-  const restoreOriginalUri = async (
-    _oktaAuth: OktaAuth,
-    originalUri: string
-  ) => {
-    history.replace(toRelativeUrl(originalUri, window.location.origin));
-  };
-
-  if (appSetup.hasAppSetup) {
+  if (demoAppSetup.hasAppSetup) {
     const oktaConfig = new OktaAuth(config);
     return (
       <Security oktaAuth={oktaConfig} restoreOriginalUri={restoreOriginalUri}>
@@ -41,13 +41,13 @@ const AppRouterAware = () => {
     );
   }
 
-  return <AppSetup appSetup={appSetup} />;
+  return <DemoAppSetup demoAppSetup={demoAppSetup} />;
 };
 
-const App = () => (
+const DemoApp = () => (
   <Router>
     <AppRouterAware />
   </Router>
 );
 
-export default App;
+export default DemoApp;

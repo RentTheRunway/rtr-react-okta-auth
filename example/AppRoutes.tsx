@@ -1,6 +1,7 @@
 import { useOktaAuth } from '@okta/okta-react';
 import * as React from 'react';
-import { Route, Switch } from 'react-router-dom';
+import { Route } from 'react-router';
+//import { Route, Switch } from 'react-router-dom';
 import { RouteWhenMemberOf, RouteWhenMemberOfAny, RtrOktaAuth } from '../src/.';
 import AdminBlog from './pages/AdminBlog';
 import Home from './pages/Home';
@@ -13,21 +14,19 @@ const AppRoutes: React.FC<Props> = () => {
 
   return (
     <RtrOktaAuth authCtx={authCtx}>
-      <Switch>
-        <Route path="/" component={Home} exact />
-        <RouteWhenMemberOf
-          group="blog_Admin"
-          component={AdminBlog}
-          path="/admin"
-          exact
-        />
-        <RouteWhenMemberOfAny
-          groups={['blog_read', 'blog_Admin']}
-          component={ReadBlog}
-          path="/read"
-          exact
-        />
-      </Switch>
+      <Route path="/" component={Home} exact />
+      <RouteWhenMemberOf
+        group="blog_Admin"
+        component={AdminBlog}
+        path="/admin"
+        exact
+      />
+      <RouteWhenMemberOfAny
+        groups={['blog_read', 'blog_Admin']}
+        component={ReadBlog}
+        path="/read"
+        exact
+      />
     </RtrOktaAuth>
   );
 };

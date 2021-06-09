@@ -11,8 +11,8 @@ const NavBar = (props: Props) => {
   const { user, authorizationStateKnown } = useRtrOktaAuth();
   const displayName = authorizationStateKnown
     ? !!user
-      ? '...'
-      : `${user.given_name} ${user.family_name}`
+      ? `${user.given_name} ${user.family_name}`
+      : '...'
     : '';
 
   return (

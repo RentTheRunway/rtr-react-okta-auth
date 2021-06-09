@@ -18,6 +18,7 @@ export default function useRtrOktaAuth(): IRtrOktaAuth {
 
   return {
     user,
+    userGroups,
     authorizationStateKnown,
     authCtx,
     isMemberOf,

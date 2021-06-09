@@ -58,9 +58,8 @@ function DocLinks() {
 }
 
 const Home = () => {
-  const { user, authorizationStateKnown } = useRtrOktaAuth();
+  const { user, userGroups, authorizationStateKnown } = useRtrOktaAuth();
   const displayName = getDisplayName(user, authorizationStateKnown);
-  const groups = !!user ? user.groups : [];
   const claims = getClaims(user);
 
   return (
@@ -136,13 +135,16 @@ const Home = () => {
               <tr>
                 <td>{displayName}</td>
                 <td>
-                  {groups.map(g => (
+                  {!userGroups.length && <em className="text-muted">None</em>}
+                  {userGroups.map(g => (
                     <span key={g} className="badge bg-secondary mr-1">
                       {g}
                     </span>
                   ))}
                 </td>
                 <td>
+                  {!claims.length && <em className="text-muted">None</em>}
+
                   {claims.map(g => (
                     <span key={g} className="badge bg-secondary mr-1">
                       {g}
@@ -365,8 +367,8 @@ const Home = () => {
   function getDisplayName(user: any | null, authorizationStateKnown: boolean) {
     const displayName = authorizationStateKnown
       ? !!user
-        ? '...'
-        : `${user.given_name} ${user.family_name}`
+        ? `${user.given_name} ${user.family_name}`
+        : '...'
       : '';
     return displayName;
   }

@@ -1000,6 +1000,7 @@ function useRtrOktaAuth() {
 
   return {
     user: user,
+    userGroups: userGroups,
     authorizationStateKnown: authorizationStateKnown,
     authCtx: authCtx,
     isMemberOf: isMemberOf,
