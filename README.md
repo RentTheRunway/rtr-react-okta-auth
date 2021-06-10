@@ -3,23 +3,24 @@ Rent the Runway - rtr-react-okta-auth - Usage and Setup
 - [Install](#install)
 - [What?](#what)
 - [Scope](#scope)
-- [How to use](#how-to-use)
-    - [Application Imports](#application-imports)
-    - [Imports from `@rent-the-runway/rtr-react-okta-auth`](#imports-from-rent-the-runwayrtr-react-okta-auth)
-    - [Okta App config](#okta-app-config)
-    - [Locking down `<Route />`'s](#locking-down-route-s)
-    - [Custom Unauthorized Component](#custom-unauthorized-component)
-    - [withAuthAwareness(...) HOC](#withauthawareness-hoc)
-- [Component Summary](#component-summary)
-  - [Locking out Routes based on Groups](#locking-out-routes-based-on-groups)
-  - [Locking out JSX based on Groups](#locking-out-jsx-based-on-groups)
-  - [Locking out Routes based on Claims](#locking-out-routes-based-on-claims)
-  - [Locking out JSX based on Claims](#locking-out-jsx-based-on-claims)
-  - [Locking out JSX based on application specific logic such as permissions / RBAC](#locking-out-jsx-based-on-application-specific-logic-such-as-permissions--rbac)
-  - [Locking out Routes based on application specific logic such as permissions / RBAC](#locking-out-routes-based-on-application-specific-logic-such-as-permissions--rbac)
-  - [useWhen() Custom Hook](#usewhen-custom-hook)
-  - [API](#api)
-  - [withAuthAwareness(...) additional parameters](#withauthawareness-additional-parameters)
+- [API and Components](#api-and-components)
+    - [API](#api)
+      - [Okta Groups:](#okta-groups)
+      - [Okta Claims](#okta-claims)
+      - [authorizationStateKnown](#authorizationstateknown)
+  - [Component Summary](#component-summary)
+    - [Locking out Routes based on Groups](#locking-out-routes-based-on-groups)
+      - [Custom Unauthorized Component](#custom-unauthorized-component)
+    - [Locking out JSX based on Groups](#locking-out-jsx-based-on-groups)
+      - [The inverse of each is also available](#the-inverse-of-each-is-also-available)
+    - [Locking out Routes based on Claims](#locking-out-routes-based-on-claims)
+    - [Locking out JSX based on Claims](#locking-out-jsx-based-on-claims)
+      - [The inverse of each is also available](#the-inverse-of-each-is-also-available-1)
+    - [Locking out JSX based on application specific logic such as permissions / RBAC](#locking-out-jsx-based-on-application-specific-logic-such-as-permissions--rbac)
+    - [Waiting for authorization state to be known](#waiting-for-authorization-state-to-be-known)
+    - [Locking out Routes based on application specific logic such as permissions / RBAC](#locking-out-routes-based-on-application-specific-logic-such-as-permissions--rbac)
+    - [useWhenAuthenticatedAnd() Custom Hook (alias useWhen())](#usewhenauthenticatedand-custom-hook-alias-usewhen)
+- [App Setup](#app-setup)
 - [Okta Setup Summary](#okta-setup-summary)
   - [Groups](#groups)
   - [Claims](#claims)
@@ -30,11 +31,11 @@ Rent the Runway - rtr-react-okta-auth - Usage and Setup
 
 
 ## Install
-`npm install @rent-the-runway/rtr-react-okta-auth @okta/okta-react@2.0.1`
+`npm install @rent-the-runway/rtr-react-okta-auth @okta/okta-react@5.1.2`
 
 -or-
 
-`yarn add @rent-the-runway/rtr-react-okta-auth @okta/okta-react@2.0.1`
+`yarn add @rent-the-runway/rtr-react-okta-auth @okta/okta-react@5.1.2`
 
 
 ## What?
@@ -65,188 +66,210 @@ One option is to use `okta-react`'s [auth](https://developer.okta.com/quickstart
 More information on this [here](https://github.com/okta/samples-java-spring/blob/master/resource-server/src/main/java/com/okta/spring/example/)
 
 
-## How to use
+## API and Components
 
-> **If using TypeScript** and an error relating to `@types/okta__okta-react` occurs, this is because Okta have not provided type definitions for `okta-react` (details [here](https://github.com/okta/okta-auth-js/issues/64)). To solve this simply include a file called `okta-react.d.ts` in the root of your application. The contents of this file is simply: 
-```javascript
-declare module '@okta/okta-react';
-```
-
-Here's some sample code that illustrates the various components and how to use them.
-\
-This example code assumes two Okta groups namely, "standard" and "admin". It also assumes two claims "CanDoA" and "CanDoB".
-
-#### Application Imports
-(including imports from `okta-react`)
-```javascript
-import React, { FC, useContext } from "react";
-import { IEmptyProps } from "./models/IEmptyProps";
-import { BrowserRouter as Router, Route } from "react-router-dom";
-import { Security, LoginCallback } from "@okta/okta-react";
-import Home from "./pages/Home";
-import Admin from "./pages/Admin";
-import Standard from "./pages/Standard";
-```
-
-#### Imports from `@rent-the-runway/rtr-react-okta-auth`
-typescript permits interface `IAuthContext`. For JavaScript, exclude this.
-```javascript
-import {
-  AuthContext,
-  IAuthContext,
-  AuthContextProvider,
-  useAuthContextState,
-  RouteWhenMemberOfAny,
-  withAuthAwareness
-} from "@rent-the-runway/rtr-react-okta-auth";
-```
-
-#### Okta App config
-(*insert your own id's as per: https://github.com/okta/okta-oidc-js/tree/master/packages/okta-react*)
-```javascript
-const authCallbackUrl = "/implicit/callback";
-const config = {
-  issuer: "https://dev-<id-here>.okta.com/oauth2/default",
-  redirectUri: `${window.location.origin}${authCallbackUrl}`,
-  clientId: "<client-secret-here>",
-  pkce: true
-};
-```
-
-#### Locking down `<Route />`'s
-In the code snippet below, the `/orders` `<Route />` is only accessible to
-1. Authenticated users
-2. Users who are members of Okta groups called `standard` OR `admin`
-
-The `/users` `<Route />` is only accessible to:
-1. Authenticated users
-2. Users who are members of group `admin`
-
-If the user arrives unauthenticated at one of those `<Route />`'s they will be redirected to the Okta login page. Upon successful authentication they will be redirected back to that `<Route />`
+#### API
 
 ```JSX
-const AppInner: FC<IEmptyProps> = () => {
+ const {
+    isMemberOf,
+    isMemberOfAll,
+    isMemberOfAny,
+    hasClaim,
+    hasAllClaims,
+    hasAnyClaims,
+    authorizationStateKnown,
+    authCtx,
+  } = useRtrOktaAuth();
+```
+
+Pretty much all that you need is the `hook`
+```JS
+useRtrOktaAuth()
+```
+
+This gives you everything you need to lockdown components/JSX and routes.
+
+##### Okta Groups:
+- `isMemberOf('vampires'): boolean` - returns true if the user is a member of the specified group.
+- `isMemberOfAll(['vampires', 'werewolves']): boolean` - returns true if the user is a member of `All` specified groups.
+- `isMemberOfAny(['vampires', 'werewolves']): boolean` - returns true if the user is a member of `Any` specified groups.
   
+##### Okta Claims
+- `hasClaim('CanDoA'): boolean` - returns true if the user has the specified Claim.
+- `isMemberOfAll(['vampires', 'werewolves']): boolean` - returns true if the user has `All` specified claims.
+- `isMemberOfAny(['vampires', 'werewolves']): boolean` - returns true if the user has `Any` specified claims.
+
+- `authCtx` is the native `okta-react' hook i.e.: 
+  `import { useOktaAuth } from '@okta/okta-react';`
+  `const authCtx = useOktaAuth();`
+
+##### authorizationStateKnown
+- `authorizationStateKnown` - Once `authContext.isAuthenticated` becomes `true` this library makes a call to Okta to fetch the user object. It is only when the user has been acquired that we can determine  which groups etc. a user belongs to. Once the user has been acquired `authorizationStateKnown` becomes `true`. You may in fact want to consider not rendering the content of your app until this is known. This will avoid any flicker as components appear; example:
+````JSX
+import * as React from 'react';
+import { Route } from 'react-router';
+import {
+  RouteWhenMemberOf,
+  RouteWhenMemberOfAny,
+  useRtrOktaAuth,
+} from '@rent-the-runway/rtr-react-okta-auth';
+import AdminBlog from './pages/AdminBlog';
+import Home from './pages/Home';
+import ReadBlog from './pages/ReadBlog';
+
+interface Props {}
+
+const AppRtrOktaAware: React.FC<Props> = () => {
+  const { authorizationStateKnown } = useRtrOktaAuth();
+
+  if (!authorizationStateKnown) return null;
+
   return (
     <>
-      <div className="container">
-        <Route path="/" exact={true} component={Home} />
-        <RouteWhenMemberOfAny
-          groups={["standard", "admin"]}
-          path="/orders"
-          exact={true}
-          component={Standard}
-        />
-        <RouteWhenMemberOfAny
-          groups={["admin"]}
-          path="/users"
-          exact={true}
-          component={Admin}
-        />
-      </div>
+      <Route path="/" component={Home} exact />
+      <RouteWhenMemberOf
+        group="blog_Admin"
+        component={AdminBlog}
+        path="/admin"
+        exact
+      />
+      <RouteWhenMemberOfAny
+        groups={['blog_read', 'blog_Admin']}
+        component={ReadBlog}
+        path="/read"
+        exact
+      />
     </>
   );
 };
-```
 
-#### Custom Unauthorized Component
-Note that all these `<Route />` components can also take an additional optional parameter `unauthorizedComponent` which is a custom `<Component />` that will be rendered when the user is unauthorized. This component can simply return a `<Redirect />` component, e.g.
-```javascript
-const ToUnauthorized = function() {
-  return <Redirect to="/unauthorized" />;
-}
-```
+export default AppRtrOktaAware;
+````
 
-#### withAuthAwareness(...) HOC
-Next, it is necessary to wrap all this in the `withAuthAwareness` `HOC` to enable the secure part of the application with the necessary utilities to function.
+That entire API will allow you do all that you need but for convenience and to save lots of boiler plate the following components are available:
 
-*Note that internally this uses `okta-react`'s `withAuth` `HOC`*
-
-```javascript
-const AuthApp = withAuthAwareness(AppInner);
-```
-
+### Component Summary
+#### Locking out Routes based on Groups
 ```JSX
-const App: FC<IEmptyProps> = props => {
-  const authContextState = useAuthContextState();
+<RouteWhenMemberOf
+    group="admin"
+    path="/orders"
+    exact={true}
+    component={Standard}
+    unauthenticatedComponent={Unauthenticated} //optional
+    unauthorizedComponent={Unauthorized} //optional
+/>
 
-  return (
-    <AuthContextProvider value={authContextState}>
-      <Router>
-        <Security {...config}>
-          <AuthApp {...props} />
-          <Route path={authCallbackUrl} component={LoginCallback} />
-        </Security>
-      </Router>
-    </AuthContextProvider>
-  );
-};
+Authenticated users from the group "admin" will have access to /orders
 ```
 
-A few  things happen above.
-1. The auth `state`/`api` is passed into the `Context API` `Provider`, so now an `API` is available to all components. This API is described below.
-2. `<Security />` is from `okta-react` and is necessary.
-3. The `<Route />` with the `LoginCallback` components is outside of the wrapped `AuthApp` component. This is **important** because this handles the Okta callback. It must be publicly available and not a secure `<Route />`
 
-
-## Component Summary
-### Locking out Routes based on Groups
-Authenticated users from groups "standard" OR "admin" will have access to /orders
 ```JSX
 <RouteWhenMemberOfAny
     groups={["standard", "admin"]}
     path="/orders"
     exact={true}
     component={Standard}
+    unauthenticatedComponent={Unauthenticated} //optional
+    unauthorizedComponent={Unauthorized} //optional
 />
+
+Authenticated users from groups "standard" OR "admin" will have access to /orders
 ```
-\
-Authenticated users from groups "standard" AND "admin" will have access to /orders
+
+
 ```JSX
 <RouteWhenMemberOfAll
     groups={["standard", "admin"]}
     path="/orders"
     exact={true}
     component={Standard}
+    unauthenticatedComponent={Unauthenticated} //optional
+    unauthorizedComponent={Unauthorized} //optional
 />
+
+Authenticated users from groups "standard" AND "admin" will have access to /orders
 ```
 
-### Locking out JSX based on Groups
+
+If the user arrives unauthenticated at one of those `<Route />`'s either a default Unauthenticated page or  the specified `unauthenticatedComponent` will render.
+If the user arrives authenticated but not authorized (based on groups or claims) at one of those `<Route />`'s a either a default Unauthorized page or the specified `unauthorizedComponent`  will render.
+
+##### Custom Unauthorized Component
+Note that the `unauthenticatedComponent` or `unauthorizedComponent` components can simply return a `<Redirect />` component, e.g.
+```javascript
+const ToUnauthorized = function() {
+  return <Redirect to="/unauthorized" />;
+}
+```
+
+#### Locking out JSX based on Groups
+```JSX
+<WhenMemberOf group="admin">
+    <div>Rendered only when user is authenticated and is a member of "admin"</div>
+</WhenMemberOf>
+```
+
 ```JSX
 <WhenMemberOfAny groups={["standard", "admin"]}>
     <div>Rendered only when user is authenticated and is a member of "standard" OR "admin"</div>
 </WhenMemberOfAny>
 ```
+
 ```JSX
 <WhenMemberOfAll groups={["standard", "admin"]}>
     <div>Rendered only when user is authenticated and is a member of "standard" AND "admin"</div>
 </WhenMemberOfAll>
 ```
 
-### Locking out Routes based on Claims
-Authenticated users with claim "CanDoA" will have access to /orders
+##### The inverse of each is also available
+```JSX
+<WhenNotMemberOf group="admin">
+    <div>Rendered only when user is authenticated and is NOT a member of "admin"</div>
+</WhenNotMemberOf>
+```
+
+```JSX
+<WhenNotMemberOfAny groups={["standard", "admin"]}>
+    <div>Rendered only when user is authenticated and is NOT a member of "standard" OR "admin"</div>
+</WhenNotMemberOfAny>
+```
+
+```JSX
+<WhenNotMemberOfAll groups={["standard", "admin"]}>
+    <div>Rendered only when user is authenticated and is NOT a member of "standard" AND "admin"</div>
+</WhenNotMemberOfAll>
+```
+
+#### Locking out Routes based on Claims
 ```JSX
 <RouteWhenHasClaim
     claim={"CanDoA"}
     path="/orders"
     exact={true}
     component={Admin}
+    unauthenticatedComponent={Unauthenticated} //optional
+    unauthorizedComponent={Unauthorized} //optional
 />
+
+Authenticated users with claim "CanDoA" will have access to /orders
 ```
 
-\
-Authenticated users with claims "CanDoA" OR "CanDoB" will have access to /orders
 ```JSX
 <RouteWhenHasAnyClaims
     claims={["CanDoA", "CanDoB"]}
     path="/orders"
     exact={true}
     component={Admin}
+    unauthenticatedComponent={Unauthenticated} //optional
+    unauthorizedComponent={Unauthorized} //optional
 />
+
+Authenticated users with claims "CanDoA" OR "CanDoB" will have access to /orders
 ```
 
-\
-Authenticated users with claims "CanDoA" AND "CanDoB" will have access to /orders
+
 ```JSX
 <RouteWhenHasAllClaims
     claims={["CanDoA", "CanDoB"]}
@@ -254,9 +277,11 @@ Authenticated users with claims "CanDoA" AND "CanDoB" will have access to /order
     exact={true}
     component={Admin}
 />
+
+Authenticated users with claims "CanDoA" AND "CanDoB" will have access to /orders
 ```
 
-### Locking out JSX based on Claims
+#### Locking out JSX based on Claims
 ```JSX
 <WhenHasClaim claim="CanDoA">
     <div>Will be rendered only when the user is authenticated and has a claim called "CanDoA"</div>
@@ -273,40 +298,86 @@ Authenticated users with claims "CanDoA" AND "CanDoB" will have access to /order
 </WhenHasAllClaims>
 ```
 
-### Locking out JSX based on application specific logic such as permissions / RBAC
+##### The inverse of each is also available
+```JSX
+<WhenNotHasClaim claim="CanDoA">
+    <div>Will be rendered only when the user is authenticated and NOT has a claim called "CanDoA"</div>
+</WhenNotHasClaim>
+```
+```JSX
+<WhenNotHasAnyClaims claims={["CanDoA", "CanDoB"]}>
+    <div>Will be rendered only when user is authenticated and NOT has claims called "CanDoA" OR "CanDoB"</div>
+</WhenHasClaims>
+```
+```JSX
+<WhenNotHasAllClaims claims={["CanDoA", "CanDoB"]}>
+    <div>Will be rendered only when user is authenticated and NOT has claims called "CanDoA" AND "CanDoB"</div>
+</WhenNotHasAllClaims>
+```
+
+#### Locking out JSX based on application specific logic such as permissions / RBAC
 *Note* Okta does not inherently provide any means to achieve RBAC. Permission management must take place in the application code.
 
-With that in mind, this library provide a generic means of locking out Routes and JSX. The following components are authentication aware.
+With that in mind, this library provide a generic means of locking out Routes and JSX. **The following components are authentication aware**.
 
 ```JSX
-<When isTrue={() => hasPermission(permissions.canViewOrder)}>
+<WhenAuthenticatedAnd isTrue={() => hasPermission(permissions.canViewOrder)}>
   <li className="nav-item">
     <Link to="/view-order" className={orderClazz}>
       canViewOrder
     </Link>
   </li>
-</When>
+</WhenAuthenticatedAnd>
 ```
+Alias `<When />`
+
 The above example shows how RBAC can be achieved. `hasPermission` is application code and has nothing to do with this library.
 
 However, `hasPermission` need not be concerned with authentication. It needs to be concerned with authorization only. This is because `isTrue` will first check authentication before invoking `hasPermission()`. If not authenticated `isTrue` returns false. `hasPermission()` must return a boolean.
 
-### Locking out Routes based on application specific logic such as permissions / RBAC
+
+#### Waiting for authorization state to be known
 ```JSX
-<RouteWhen
+<WhenAuthStatePending>
+  We're just waiting to see if the user is authorized or not, 1 moment...
+</WhenAuthStatePending>
+```
+
+So in theory you can then combine components
+
+```JSX
+<WhenAuthStatePending>
+  <Spin />
+</WhenAuthStatePending>
+<WhenMemberOf group="admins">
+  <button onClick={doStuff}>Off We go</button>
+</WhenMemberOf>
+<WhenNotMemberOf group="admins">
+  <button disabled>Off We go</button>
+</WhenNotMemberOf>
+```
+
+
+
+#### Locking out Routes based on application specific logic such as permissions / RBAC
+```JSX
+<RouteWhenAuthenticatedAnd
   isTrue={() => hasPermission(permissions.canViewOrder)}
   path="/view-order"
   exact={true}
   component={ViewOrder}
 />
 ```
+Alias `<RouteWhen />`
+
+
 Here the `isTrue` will check authentication before invoking `hasPermission()`.  If not authenticated `isTrue` returns false. `hasPermission()` must return a boolean.
 `<RouteWhen />` will redirect to the Okta login page is `isTrue` returns false. 
 
-As with the other `<RouteWhenXyZ />` components, `<RouteWhen />` takes an optional `unauthorizedComponent` parameter (Which can render a `<Redirect />` if so desired>).
+As with the other `<RouteWhenXyZ />` components, `<RouteWhen />` takes an optional `unauthorizedComponent` and `unauthenticatedComponent` parameter (Which can render a `<Redirect />` if so desired>).
 
 
-### useWhen() Custom Hook
+#### useWhenAuthenticatedAnd() Custom Hook (alias useWhen())
 If we want to do something like disable a button based on some criteria the `useWhen` custom hook can be used.
 ```JSX
 <button
@@ -318,15 +389,15 @@ If we want to do something like disable a button based on some criteria the `use
 </button>
 ```
 ```javascript
-const { when } = useWhen();
-const { groups } = useContext<IAuthContext>(AuthContext);
+const { when } = useWhenAuthenticatedAnd();
+const { userGroups } = useRtrOktaAuth();
 const canIssueRefund = canRefund();
 
 function canRefund() {
   return when(() => hasPermission(permissions.canRefund));
 
   function hasPermission(permission: string) {
-    const permissions = getPermissions(groups);
+    const permissions = getPermissions(userGroups);
     return permissions.includes(permission);
   }
 }
@@ -339,8 +410,8 @@ In this example, `hasPermission` and `canRefund` are arbitrary application code.
 
 *Note* The reason for the generic arbitrary nature of...
 ```JSX
-<When />
-<RouteWhen />
+<WhenAuthenticatedAnd />
+<RouteWhenAuthenticatedAnd />
 ```
 and
 ```javascript
@@ -349,92 +420,77 @@ useWhen()
 ...is to accommodate such things as RBAC. **The application can manually match permissions to Okta groups**. 
 These components are authentication state aware.
 
+## App Setup
+There is a tiny bit of setup required, additional the the `okta-react` setup.
 
-### API
-Passing in the `authContextState` into the Context API `Provider` as so effectively delivers the API to all components.
+Begin with the standard `okta-react` [setup](https://github.com/okta/okta-react#usage).
+````JSX
+<Router>
+  <Security oktaAuth={oktaConfig} restoreOriginalUri={restoreOriginalUri}>
+    <AppOktaAware />
+    <Route path="/login/callback" component={LoginCallback} />
+  </Security>
+</Router>
+````
 
-```JSX
-const App: FC<IEmptyProps> = props => {
-  const authContextState = useAuthContextState();
+Note the `<AppOktaAware />` component. **You need to create this yourself**.
+
+````JSX
+import { useOktaAuth } from '@okta/okta-react';
+import * as React from 'react';
+import { RtrOktaAuth } from '@rent-the-runway/rtr-react-okta-auth';
+import AppRtrOktaAware from './AppRtrOktaAware';
+
+const AppOktaAware: React.FC = () => {
+  const authCtx = useOktaAuth();
 
   return (
-    <AuthContextProvider value={authContextState}>
-      <Router>
-        <Security {...config}>
-          <AuthApp {...props} />
-          <Route path={authCallbackUrl} component={LoginCallback} />
-        </Security>
-      </Router>
-    </AuthContextProvider>
+    <RtrOktaAuth authCtx={authCtx}>
+      <AppRtrOktaAware />
+    </RtrOktaAuth>
   );
 };
-```
 
-Use it as follows:
+export default AppOktaAware;
+````
+It simply passes an instance of `useOktaAuth()` into `<RtrOktaAuth />` which provides `Context` for all the `rtr-okta-auth` components.
 
-```javascript
-import { AuthContext, IAuthContext } from "@rent-the-runway/rtr-react-okta-auth";
-```
+`<AppRtrOktaAware />` is pretty much your `App` which is now Okta aware so you can use all of the components this library offers.
 
-TypeScript
-```typescript
-   const {
-     login,
-     logout,
-     isAuthenticated,
-     userDisplayName,
-     user,
-     groups,
-     auth
-   } = useContext<IAuthContext>(AuthContext);
-```
+Example:
+````JSX
+import * as React from 'react';
+import { Route } from 'react-router';
+import { RouteWhenMemberOf, RouteWhenMemberOfAny } from '@rent-the-runway/rtr-react-okta-auth';
+import AdminBlog from './pages/AdminBlog';
+import Home from './pages/Home';
+import ReadBlog from './pages/ReadBlog';
 
-JavaScript
-```javascript
-  const {
-     login,
-     logout,
-     isAuthenticated,
-     userDisplayName,
-     user,
-     groups,
-     auth
-   } = useContext(AuthContext);
-```
-...where:
+const AppRtrOktaAware: React.FC = () => {
+  return (
+    <>
+      <Route path="/" component={Home} exact />
+      <RouteWhenMemberOf
+        group="blog_Admin"
+        component={AdminBlog}
+        path="/admin"
+        exact
+      />
+      <RouteWhenMemberOfAny
+        groups={['blog_read', 'blog_Admin']}
+        component={ReadBlog}
+        path="/read"
+        exact
+      />
+    </>
+  );
+};
 
-1. `login` is a function from `okta-react`
-2. `logout` is a function from `okta-react`
-3. `isAuthenticated` is a boolean
-4. `userDisplayName` is a string
-5. `user` is an object, the result of `await auth.getUser()` from `okta-react`
-6. `groups` is a string array of the groups the user is a member of
-7. `auth` is from `okta-react`
+export default AppRtrOktaAware;
+````
 
-E.g.
-```JSX
-<button onClick={() => login("/home")} className="btn btn-link">
-    Login
-</button>
-```
+That's all there is to it.
 
-### withAuthAwareness(...) additional parameters
-It is necessary to wrap the secure part of the app in `withAuthAwareness`. Part of the reason for this is that the `Component` it wraps will not render until after Okta has been consulted about the authentication state of the user. Once this state is known, the wrapped component will render.
-\
-`withAuthAwareness` takes two optional additional parameters, two `callback function`s, namely `onAuthKnown` and `onAuthPending` which can be used to show spinning icons or to give some indication to the user that something is happening while Okta is being consulted in the background.
-
-```javascript
-const AuthApp = withAuthAwareness(SecureApp, onAuthKnown, onAuthPending);
-
-function onAuthKnown() {
-  //clear spinning icon
-}
-
-function onAuthPending() {
-  //set spinning icon
-}
-
-```
 
 ## Okta Setup Summary
 Setup your own Okta account as explained here: https://github.com/okta/okta-oidc-js/tree/master/packages/okta-react
@@ -472,25 +528,31 @@ Assuming access to an Okta account (you can create a dev account for free by sig
 
 Within the Okta dashboard, click on the 'Applications' link in the main navigation menu. 
 
-Click the 'Add Application' button.
+1. Click the 'Create App Integration' button.
+2. Choose OIDC - OpenID Connect.
+3. Then Choose the 'Single Page App' option and hit Next
 
-Choose the 'Single Page App' option and click 'Next'
+![create app integration](/readme-img/1_create_app.png)
+![create app integration](/readme-img/2_app_type.png)
 
-Give it a suitable name (**My SPA** for now) and update the BaseURIs and Login redirect URIs accordingly. Add URI's for the different environments e.g. dev, staging, prod
+For 'Grant type' check the '**Implicit**' option and also check the '**Authorization Code**' option
 
-For 'Grant type allowed' check the '**Implicit**' option and also check the '**Authorization Code**' option
+1. Give it a suitable name (**Example SPA** for now).
+2. Update the Sign-in redirect URI to http://localhost:**3000**/login/callback
+3. Update the Sign-out redirect URIs also to http://localhost:**3000**
+4. Optionally, add URI's for the different environments e.g. dev, staging, prod
+5. Trusted Origins **Base URIs** is generally required if you want to be able to logout. Add http://localhost:3000.
 
-Click 'Done'.
 
-![alt text](/readme-img/create-new-spa-app.png)
+![create app integration](/readme-img/3_config_app.png)
 
-After clicking 'Done' note or copy the Client ID for later.
+Hit Save
 
-Observing the 'Assignments' tab it can be noted that the user-group 'Everyone' is associated with the 'My Spa' app. This may not be the situation in a real world application but for illustration purposes its sufficient.
 
-Navigate into 'Authorization Servers' from the main navigation menu
-![alt text](/readme-img/authorization-servers.png)
+Note or copy the Client ID for later.
 
+
+Navigate into 'Security` -> 'API' -> 'Authorization Servers' from the main navigation menu
 
 \
 In the 'Trusted Origins' tab add the various URL's that will need access to the Okta application. This is necessary in order to facilitate CORS.
@@ -512,7 +574,8 @@ This is not the only way to achieve this but in order to work with the `@rent-th
 
 In the 'Access Policies' tab, enable access policy by adding a rule and configuring accordingly
 ![Add Rule](/readme-img/rule.png)
-Now `await auth.getUser()` will include a `groups` property.
+
+Now `const { user } = useRtrOktaAuth();` will include a `groups` property.
 
 
 ### Getting Okta to supply Claims
@@ -522,7 +585,7 @@ In the Okta admin we can create a claim and associate it with a user-group as so
 To associate a Claim with more than one group we can use regular expressions
 ![Create Claim for Multiple Groups](/readme-img/create_claim_many_groups.png)
 
-Now `await auth.getUser()` will include each claim as an individual property.
+Now `const { user } = useRtrOktaAuth();` will include each claim as an individual property.
 
 While the code for this library keeps `groups` and `claims` separate, setting Okta up this way makes `groups` feel like `roles` and `claims` feel like `permissions` within those `roles`.
 
