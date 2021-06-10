@@ -52,25 +52,6 @@ function _objectWithoutPropertiesLoose(source, excluded) {
   return target;
 }
 
-var DefaultUnAuthenticated = function DefaultUnAuthenticated() {
-  var _useRtrOktaAuth = useRtrOktaAuth(),
-      authCtx = _useRtrOktaAuth.authCtx;
-
-  if (!authCtx.authState.isAuthenticated) {
-    return React__default.createElement("div", {
-      "data-testid": "default-unauthenticated"
-    }, React__default.createElement("div", null, "Unauthenticated"));
-  }
-
-  return null;
-};
-
-var DefaultUnauthorized = function DefaultUnauthorized() {
-  return React__default.createElement("div", {
-    "data-testid": "default-unauthorized"
-  }, React__default.createElement("div", null, "Unauthorized"));
-};
-
 function getIntersection(_arrayA, _arrayB) {
   var arrayA = _arrayA.map(function (e) {
     return e.toLowerCase().trim();
@@ -996,6 +977,25 @@ function useRtrOktaAuth() {
     return hasAllProperties(user, claims);
   }
 }
+
+var DefaultUnAuthenticated = function DefaultUnAuthenticated() {
+  var _useRtrOktaAuth = useRtrOktaAuth(),
+      authCtx = _useRtrOktaAuth.authCtx;
+
+  if (!authCtx.authState.isAuthenticated) {
+    return React__default.createElement("div", {
+      "data-testid": "default-unauthenticated"
+    }, React__default.createElement("div", null, "Unauthenticated"));
+  }
+
+  return null;
+};
+
+var DefaultUnauthorized = function DefaultUnauthorized() {
+  return React__default.createElement("div", {
+    "data-testid": "default-unauthorized"
+  }, React__default.createElement("div", null, "Unauthorized"));
+};
 
 var RouteWhenMemberOfAll = function RouteWhenMemberOfAll(props) {
   var groups = props.groups,

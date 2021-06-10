@@ -59,7 +59,7 @@
   ],
   "devDependencies": {
     "@okta/okta-react": "^5.1.2",
-    "@size-limit/preset-small-lib": "^4.11.0",
+    "@size-limit/preset-small-lib": "^4.12.0",
     "@testing-library/jest-dom": "^5.12.0",
     "@testing-library/react": "^11.2.7",
     "@types/jest": "^26.0.23",
@@ -71,7 +71,7 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-router-dom": "^5.2.0",
-    "size-limit": "^4.11.0",
+    "size-limit": "^4.12.0",
     "tsdx": "^0.14.1",
     "tslib": "^2.2.0",
     "typescript": "^4.3.2"

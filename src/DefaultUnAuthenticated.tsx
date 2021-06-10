@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { useRtrOktaAuth } from '.';
+import useRtrOktaAuth from './useRtrOktaAuth';
 
 const DefaultUnAuthenticated: FC = () => {
   const { authCtx } = useRtrOktaAuth();
