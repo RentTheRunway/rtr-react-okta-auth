@@ -1,9 +1,9 @@
 import React, { FC } from 'react';
 import { Route } from 'react-router-dom';
-import { useRtrOktaAuth } from '.';
+import DefaultUnAuthenticated from './DefaultUnAuthenticated';
 import DefaultUnauthorized from './DefaultUnauthorized';
 import IRouteWhenMemberOfProps from './models/IRouteWhenMemberOfProps';
-import DefaultUnAuthenticated from './DefaultUnAuthenticated';
+import useRtrOktaAuth from './useRtrOktaAuth';
 
 const RouteWhenMemberOfAll: FC<IRouteWhenMemberOfProps> = props => {
   const {

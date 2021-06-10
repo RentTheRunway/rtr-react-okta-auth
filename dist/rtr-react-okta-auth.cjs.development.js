@@ -59,12 +59,6 @@ function _objectWithoutPropertiesLoose(source, excluded) {
   return target;
 }
 
-var DefaultUnauthorized = function DefaultUnauthorized() {
-  return React__default.createElement("div", {
-    "data-testid": "default-unauthorized"
-  }, React__default.createElement("div", null, "Unauthorized"));
-};
-
 var DefaultUnAuthenticated = function DefaultUnAuthenticated() {
   var _useRtrOktaAuth = useRtrOktaAuth(),
       authCtx = _useRtrOktaAuth.authCtx;
@@ -78,42 +72,10 @@ var DefaultUnAuthenticated = function DefaultUnAuthenticated() {
   return null;
 };
 
-var RouteWhenMemberOfAll = function RouteWhenMemberOfAll(props) {
-  var groups = props.groups,
-      component = props.component,
-      unauthenticatedComponent = props.unauthenticatedComponent,
-      unauthorizedComponent = props.unauthorizedComponent,
-      rest = _objectWithoutPropertiesLoose(props, ["groups", "component", "unauthenticatedComponent", "unauthorizedComponent"]);
-
-  var _useRtrOktaAuth = useRtrOktaAuth(),
-      isMemberOfAll = _useRtrOktaAuth.isMemberOfAll,
-      authCtx = _useRtrOktaAuth.authCtx;
-
-  var isAuthenticated = authCtx.authState.isAuthenticated;
-  var intersects = isMemberOfAll(groups);
-  var compToRender = isAuthenticated ? intersects ? component : !!unauthorizedComponent ? unauthorizedComponent : DefaultUnauthorized : !!unauthenticatedComponent ? unauthenticatedComponent : DefaultUnAuthenticated;
-  return React__default.createElement(reactRouterDom.Route, Object.assign({}, rest, {
-    component: compToRender
-  }));
-};
-
-var RouteWhenMemberOfAny = function RouteWhenMemberOfAny(props) {
-  var groups = props.groups,
-      component = props.component,
-      unauthenticatedComponent = props.unauthenticatedComponent,
-      unauthorizedComponent = props.unauthorizedComponent,
-      rest = _objectWithoutPropertiesLoose(props, ["groups", "component", "unauthenticatedComponent", "unauthorizedComponent"]);
-
-  var _useRtrOktaAuth = useRtrOktaAuth(),
-      isMemberOfAny = _useRtrOktaAuth.isMemberOfAny,
-      authCtx = _useRtrOktaAuth.authCtx;
-
-  var isAuthenticated = authCtx.authState.isAuthenticated;
-  var intersects = isMemberOfAny(groups);
-  var compToRender = isAuthenticated ? intersects ? component : !!unauthorizedComponent ? unauthorizedComponent : DefaultUnauthorized : !!unauthenticatedComponent ? unauthenticatedComponent : DefaultUnAuthenticated;
-  return React__default.createElement(reactRouterDom.Route, Object.assign({}, rest, {
-    component: compToRender
-  }));
+var DefaultUnauthorized = function DefaultUnauthorized() {
+  return React__default.createElement("div", {
+    "data-testid": "default-unauthorized"
+  }, React__default.createElement("div", null, "Unauthorized"));
 };
 
 function getIntersection(_arrayA, _arrayB) {
@@ -1041,6 +1003,44 @@ function useRtrOktaAuth() {
     return hasAllProperties(user, claims);
   }
 }
+
+var RouteWhenMemberOfAll = function RouteWhenMemberOfAll(props) {
+  var groups = props.groups,
+      component = props.component,
+      unauthenticatedComponent = props.unauthenticatedComponent,
+      unauthorizedComponent = props.unauthorizedComponent,
+      rest = _objectWithoutPropertiesLoose(props, ["groups", "component", "unauthenticatedComponent", "unauthorizedComponent"]);
+
+  var _useRtrOktaAuth = useRtrOktaAuth(),
+      isMemberOfAll = _useRtrOktaAuth.isMemberOfAll,
+      authCtx = _useRtrOktaAuth.authCtx;
+
+  var isAuthenticated = authCtx.authState.isAuthenticated;
+  var intersects = isMemberOfAll(groups);
+  var compToRender = isAuthenticated ? intersects ? component : !!unauthorizedComponent ? unauthorizedComponent : DefaultUnauthorized : !!unauthenticatedComponent ? unauthenticatedComponent : DefaultUnAuthenticated;
+  return React__default.createElement(reactRouterDom.Route, Object.assign({}, rest, {
+    component: compToRender
+  }));
+};
+
+var RouteWhenMemberOfAny = function RouteWhenMemberOfAny(props) {
+  var groups = props.groups,
+      component = props.component,
+      unauthenticatedComponent = props.unauthenticatedComponent,
+      unauthorizedComponent = props.unauthorizedComponent,
+      rest = _objectWithoutPropertiesLoose(props, ["groups", "component", "unauthenticatedComponent", "unauthorizedComponent"]);
+
+  var _useRtrOktaAuth = useRtrOktaAuth(),
+      isMemberOfAny = _useRtrOktaAuth.isMemberOfAny,
+      authCtx = _useRtrOktaAuth.authCtx;
+
+  var isAuthenticated = authCtx.authState.isAuthenticated;
+  var intersects = isMemberOfAny(groups);
+  var compToRender = isAuthenticated ? intersects ? component : !!unauthorizedComponent ? unauthorizedComponent : DefaultUnauthorized : !!unauthenticatedComponent ? unauthenticatedComponent : DefaultUnAuthenticated;
+  return React__default.createElement(reactRouterDom.Route, Object.assign({}, rest, {
+    component: compToRender
+  }));
+};
 
 var WhenMemberOfAll = function WhenMemberOfAll(props) {
   var _useRtrOktaAuth = useRtrOktaAuth(),

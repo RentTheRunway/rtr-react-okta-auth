@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
-import { RouteWhenMemberOfAll } from '.';
 import IRouteWhenMemberOfGroupProps from './models/IRouteWhenMemberOfGroupProps';
+import RouteWhenMemberOfAll from './RouteWhenMemberOfAll';
 
 const RouteWhenMemberOf: FC<IRouteWhenMemberOfGroupProps> = props => {
   const { group, ...rest } = props;
