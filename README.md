@@ -10,7 +10,7 @@ Rent the Runway - rtr-react-okta-auth - Usage and Setup
       - [authorizationStateKnown](#authorizationstateknown)
   - [Component Summary](#component-summary)
     - [Locking out Routes based on Groups](#locking-out-routes-based-on-groups)
-      - [Custom Unauthorized Component](#custom-unauthorized-component)
+      - [Redirect for Unauthenticated or Unauthorized Route Access](#redirect-for-unauthenticated-or-unauthorized-route-access)
     - [Locking out JSX based on Groups](#locking-out-jsx-based-on-groups)
       - [The inverse of each is also available](#the-inverse-of-each-is-also-available)
     - [Locking out Routes based on Claims](#locking-out-routes-based-on-claims)
@@ -42,7 +42,7 @@ Rent the Runway - rtr-react-okta-auth - Usage and Setup
 A library that allows a React application to interact with Okta.
 It expands on the functionality of [okta-react](https://github.com/okta/okta-oidc-js/tree/master/packages/okta-react). 
 
-`okta-react` is detailed by example [here](https://developer.okta.com/quickstart/#/react/nodejs/express) however it has some deficiencies, specifically, it only handles authentication, it does not provide for authorization.
+`okta-react` is detailed by example [here](https://developer.okta.com/quickstart/#/react/nodejs/express) however it only handles authentication, it does not provide for authorization.
 `@rent-the-runway/rtr-react-okta-auth` provides for group-based authorization.
 \
 Specifically, access to Routes and JSX can be permitted to users
@@ -52,7 +52,7 @@ Specifically, access to Routes and JSX can be permitted to users
 
 The library can be used for both JavaScript and TypeScript.
 
-More okta-react **version 2.0.1** documentation [here](https://www.npmjs.com/package/@okta/okta-react/v/2.0.1): 
+More okta-react **version 5.1.2** documentation [here](https://www.npmjs.com/package/@okta/okta-react/v/5.1.2): 
 
 ## Scope
 This library is concerned with Okta's implicit flow. It's intent is to lock down UI fragments and react `<Route />`'s client side, i.e. within the browser.
@@ -61,9 +61,7 @@ This library is not directly concerned with securing server side API end points 
 
 If an API end point needs to be made secure it is the responsibility of the individual developers to make it so.
 
-One option is to use `okta-react`'s [auth](https://developer.okta.com/quickstart-fragments/react/default-example/#use-the-access-token) utility (which is made available in this library). It allows the Access Token and/or the ID Token to be fetched. These tokens can be included in any request for example via a JWT token where they can be parsed server-side to enable security on the route.
-
-More information on this [here](https://github.com/okta/samples-java-spring/blob/master/resource-server/src/main/java/com/okta/spring/example/)
+More information on this [here](https://developer.okta.com/blog/2020/01/13/kotlin-react-crud) and [here](https://github.com/okta/samples-java-spring/blob/master/resource-server/src/main/java/com/okta/spring/example/)
 
 
 ## API and Components
@@ -83,10 +81,7 @@ More information on this [here](https://github.com/okta/samples-java-spring/blob
   } = useRtrOktaAuth();
 ```
 
-Pretty much all that you need is the `hook`
-```JS
-useRtrOktaAuth()
-```
+Pretty much all that you need is the `hook` `useRtrOktaAuth()`
 
 This gives you everything you need to lockdown components/JSX and routes.
 
@@ -194,10 +189,10 @@ Authenticated users from groups "standard" AND "admin" will have access to /orde
 
 
 If the user arrives unauthenticated at one of those `<Route />`'s either a default Unauthenticated page or  the specified `unauthenticatedComponent` will render.
-If the user arrives authenticated but not authorized (based on groups or claims) at one of those `<Route />`'s a either a default Unauthorized page or the specified `unauthorizedComponent`  will render.
+If the user arrives authenticated but not authorized (based on groups or claims) at one of those `<Route />`'s either the default Unauthorized page or the specified `unauthorizedComponent`  will render.
 
-##### Custom Unauthorized Component
-Note that the `unauthenticatedComponent` or `unauthorizedComponent` components can simply return a `<Redirect />` component, e.g.
+##### Redirect for Unauthenticated or Unauthorized Route Access
+The `unauthenticatedComponent` or `unauthorizedComponent` components can simply return a `<Redirect />` component, e.g.
 ```javascript
 const ToUnauthorized = function() {
   return <Redirect to="/unauthorized" />;
@@ -207,38 +202,38 @@ const ToUnauthorized = function() {
 #### Locking out JSX based on Groups
 ```JSX
 <WhenMemberOf group="admin">
-    <div>Rendered only when user is authenticated and is a member of "admin"</div>
+    <div>Rendered only when the user is authenticated and is a member of "admin"</div>
 </WhenMemberOf>
 ```
 
 ```JSX
 <WhenMemberOfAny groups={["standard", "admin"]}>
-    <div>Rendered only when user is authenticated and is a member of "standard" OR "admin"</div>
+    <div>Rendered only when the user is authenticated and is a member of "standard" OR "admin"</div>
 </WhenMemberOfAny>
 ```
 
 ```JSX
 <WhenMemberOfAll groups={["standard", "admin"]}>
-    <div>Rendered only when user is authenticated and is a member of "standard" AND "admin"</div>
+    <div>Rendered only when the user is authenticated and is a member of "standard" AND "admin"</div>
 </WhenMemberOfAll>
 ```
 
 ##### The inverse of each is also available
 ```JSX
 <WhenNotMemberOf group="admin">
-    <div>Rendered only when user is authenticated and is NOT a member of "admin"</div>
+    <div>Rendered only when the user not authenticated or is not a member of "admin"</div>
 </WhenNotMemberOf>
 ```
 
 ```JSX
 <WhenNotMemberOfAny groups={["standard", "admin"]}>
-    <div>Rendered only when user is authenticated and is NOT a member of "standard" OR "admin"</div>
+    <div>Rendered only when the user is not authenticated or is not a member of "standard" OR "admin"</div>
 </WhenNotMemberOfAny>
 ```
 
 ```JSX
 <WhenNotMemberOfAll groups={["standard", "admin"]}>
-    <div>Rendered only when user is authenticated and is NOT a member of "standard" AND "admin"</div>
+    <div>Rendered only when the user is not authenticated or is not a member of "standard" AND "admin"</div>
 </WhenNotMemberOfAll>
 ```
 
@@ -289,29 +284,29 @@ Authenticated users with claims "CanDoA" AND "CanDoB" will have access to /order
 ```
 ```JSX
 <WhenHasAnyClaims claims={["CanDoA", "CanDoB"]}>
-    <div>Will be rendered only when user is authenticated and has claims called "CanDoA" OR "CanDoB"</div>
+    <div>Will be rendered only when the user is authenticated and has claims called "CanDoA" OR "CanDoB"</div>
 </WhenHasClaims>
 ```
 ```JSX
 <WhenHasAllClaims claims={["CanDoA", "CanDoB"]}>
-    <div>Will be rendered only when user is authenticated and has claims called "CanDoA" AND "CanDoB"</div>
+    <div>Will be rendered only when the user is authenticated and has claims called "CanDoA" AND "CanDoB"</div>
 </WhenHasAllClaims>
 ```
 
 ##### The inverse of each is also available
 ```JSX
 <WhenNotHasClaim claim="CanDoA">
-    <div>Will be rendered only when the user is authenticated and NOT has a claim called "CanDoA"</div>
+    <div>Will be rendered only when the user is not authenticated or not has a claim called "CanDoA"</div>
 </WhenNotHasClaim>
 ```
 ```JSX
 <WhenNotHasAnyClaims claims={["CanDoA", "CanDoB"]}>
-    <div>Will be rendered only when user is authenticated and NOT has claims called "CanDoA" OR "CanDoB"</div>
+    <div>Will be rendered only when the user is not authenticated or not has claims called "CanDoA" OR "CanDoB"</div>
 </WhenHasClaims>
 ```
 ```JSX
 <WhenNotHasAllClaims claims={["CanDoA", "CanDoB"]}>
-    <div>Will be rendered only when user is authenticated and NOT has claims called "CanDoA" AND "CanDoB"</div>
+    <div>Will be rendered only when the user is not authenticated or not has claims called "CanDoA" AND "CanDoB"</div>
 </WhenNotHasAllClaims>
 ```
 
@@ -339,7 +334,7 @@ However, `hasPermission` need not be concerned with authentication. It needs to 
 #### Waiting for authorization state to be known
 ```JSX
 <WhenAuthStatePending>
-  We're just waiting to see if the user is authorized or not, 1 moment...
+  We are just waiting to see if the user is authorized or not, 1 moment...
 </WhenAuthStatePending>
 ```
 
@@ -453,7 +448,7 @@ const AppOktaAware: React.FC = () => {
 
 export default AppOktaAware;
 ````
-It simply passes an instance of `useOktaAuth()` into `<RtrOktaAuth />` which provides `Context` for all the `rtr-okta-auth` components.
+It must pass an instance of `useOktaAuth()` into `<RtrOktaAuth />` which provides `Context` for all the `rtr-react-okta-auth` components.
 
 `<AppRtrOktaAware />` is pretty much your `App` which is now Okta aware so you can use all of the components this library offers.
 
@@ -493,7 +488,7 @@ That's all there is to it.
 
 
 ## Okta Setup Summary
-Setup your own Okta account as explained here: https://github.com/okta/okta-oidc-js/tree/master/packages/okta-react
+Setup your own Okta account as explained [here](https://github.com/okta/okta-oidc-js/tree/master/packages/okta-react).
 
 You simply need to create `Groups` or `Claims` in Okta and add users to them. This documentation assumes two groups named `admin` and `standard`.
 
