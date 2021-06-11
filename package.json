@@ -24,6 +24,7 @@
     "test": "tsdx test --passWithNoTests",
     "test:watch": "tsdx test --watch",
     "test:coverage": "tsdx test --coverage",
+    "test:badges": "jest-coverage-badges",
     "lint": "tsdx lint",
     "prepare": "tsdx build"
   },
@@ -60,10 +61,17 @@
     "react-router-dom": "^5.2.0",
     "tsdx": "^0.14.1",
     "tslib": "^2.2.0",
-    "typescript": "^4.3.2"
+    "typescript": "^4.3.2",
+    "jest-coverage-badges": "^1.1.2"
   },
   "keywords": [
     "React",
     "Okta"
-  ]
+  ],
+  "jest": {
+    "coverageReporters": [
+      "json-summary",
+      "text"
+    ]
+  }
 }

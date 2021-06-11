@@ -1,33 +1,40 @@
-Rent the Runway - rtr-react-okta-auth - Usage and Setup
+#  Rent the Runway - rtr-react-okta-auth 
 
-- [Install](#install)
-- [What?](#what)
-- [Scope](#scope)
-- [API and Components](#api-and-components)
-    - [API](#api)
-      - [Okta Groups:](#okta-groups)
-      - [Okta Claims](#okta-claims)
-      - [authorizationStateKnown](#authorizationstateknown)
-  - [Component Summary](#component-summary)
-    - [Locking out Routes based on Groups](#locking-out-routes-based-on-groups)
-      - [Redirect for Unauthenticated or Unauthorized Route Access](#redirect-for-unauthenticated-or-unauthorized-route-access)
-    - [Locking out JSX based on Groups](#locking-out-jsx-based-on-groups)
-      - [The inverse of each is also available](#the-inverse-of-each-is-also-available)
-    - [Locking out Routes based on Claims](#locking-out-routes-based-on-claims)
-    - [Locking out JSX based on Claims](#locking-out-jsx-based-on-claims)
-      - [The inverse of each is also available](#the-inverse-of-each-is-also-available-1)
-    - [Locking out JSX based on application specific logic such as permissions / RBAC](#locking-out-jsx-based-on-application-specific-logic-such-as-permissions--rbac)
-    - [Waiting for authorization state to be known](#waiting-for-authorization-state-to-be-known)
-    - [Locking out Routes based on application specific logic such as permissions / RBAC](#locking-out-routes-based-on-application-specific-logic-such-as-permissions--rbac)
-    - [useWhenAuthenticatedAnd() Custom Hook (alias useWhen())](#usewhenauthenticatedand-custom-hook-alias-usewhen)
-- [App Setup](#app-setup)
-- [Okta Setup Summary](#okta-setup-summary)
-  - [Groups](#groups)
-  - [Claims](#claims)
-- [Detailed Okta Setup](#detailed-okta-setup)
-  - [Setting up the Okta Application](#setting-up-the-okta-application)
-  - [Getting Okta to supply user groups](#getting-okta-to-supply-user-groups)
-  - [Getting Okta to supply Claims](#getting-okta-to-supply-claims)
+
+![Coverage lines](./coverage/badge-lines.svg)
+![Coverage functions](./coverage/badge-functions.svg)
+![Coverage branches](./coverage/badge-branches.svg)
+![Coverage statements](./coverage/badge-statements.svg)
+
+- [Rent the Runway - rtr-react-okta-auth](#rent-the-runway---rtr-react-okta-auth)
+  - [Install](#install)
+  - [What?](#what)
+  - [Scope](#scope)
+  - [API and Components](#api-and-components)
+      - [API](#api)
+        - [Okta Groups:](#okta-groups)
+        - [Okta Claims](#okta-claims)
+        - [authorizationStateKnown](#authorizationstateknown)
+    - [Component Summary](#component-summary)
+      - [Locking out Routes based on Groups](#locking-out-routes-based-on-groups)
+        - [Redirect for Unauthenticated or Unauthorized Route Access](#redirect-for-unauthenticated-or-unauthorized-route-access)
+      - [Locking out JSX based on Groups](#locking-out-jsx-based-on-groups)
+        - [The inverse of each is also available](#the-inverse-of-each-is-also-available)
+      - [Locking out Routes based on Claims](#locking-out-routes-based-on-claims)
+      - [Locking out JSX based on Claims](#locking-out-jsx-based-on-claims)
+        - [The inverse of each is also available](#the-inverse-of-each-is-also-available-1)
+      - [Locking out JSX based on application specific logic such as permissions / RBAC](#locking-out-jsx-based-on-application-specific-logic-such-as-permissions--rbac)
+      - [Waiting for authorization state to be known](#waiting-for-authorization-state-to-be-known)
+      - [Locking out Routes based on application specific logic such as permissions / RBAC](#locking-out-routes-based-on-application-specific-logic-such-as-permissions--rbac)
+      - [useWhenAuthenticatedAnd() Custom Hook (alias useWhen())](#usewhenauthenticatedand-custom-hook-alias-usewhen)
+  - [App Setup](#app-setup)
+  - [Okta Setup Summary](#okta-setup-summary)
+    - [Groups](#groups)
+    - [Claims](#claims)
+  - [Detailed Okta Setup](#detailed-okta-setup)
+    - [Setting up the Okta Application](#setting-up-the-okta-application)
+    - [Getting Okta to supply user groups](#getting-okta-to-supply-user-groups)
+    - [Getting Okta to supply Claims](#getting-okta-to-supply-claims)
 
 
 ## Install
@@ -52,7 +59,7 @@ Specifically, access to Routes and JSX can be permitted to users
 
 The library can be used for both JavaScript and TypeScript.
 
-More okta-react **version 5.1.2** documentation [here](https://www.npmjs.com/package/@okta/okta-react/v/5.1.2): 
+More `okta-react` **version 5.1.2** documentation [here](https://www.npmjs.com/package/@okta/okta-react/v/5.1.2): 
 
 ## Scope
 This library is concerned with Okta's implicit flow. It's intent is to lock down UI fragments and react `<Route />`'s client side, i.e. within the browser.
