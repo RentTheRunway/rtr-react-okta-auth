@@ -3,10 +3,10 @@
 ![Coverage lines](https://img.shields.io/badge/license-MIT-green)
 
 
-![Coverage lines](./coverage/badge-lines.svg)
-![Coverage functions](./coverage/badge-functions.svg)
-![Coverage branches](./coverage/badge-branches.svg)
-![Coverage statements](./coverage/badge-statements.svg)
+![Coverage lines](./readme-img/badge-lines.svg)
+![Coverage functions](./readme-img/badge-functions.svg)
+![Coverage branches](./readme-img/badge-branches.svg)
+![Coverage statements](./readme-img/badge-statements.svg)
 
 - [Rent the Runway - rtr-react-okta-auth](#rent-the-runway---rtr-react-okta-auth)
   - [Install](#install)
