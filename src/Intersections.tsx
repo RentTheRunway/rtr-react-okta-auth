@@ -20,10 +20,9 @@ function hasFullIntersection(
   );
 }
 
-
 function hasAnyProperty(obj: any, properties: string[]): boolean {
-  for(let i=0; i<properties.length; i++) {
-    if(obj.hasOwnProperty(properties[i])) {
+  for (let i = 0; i < properties.length; i++) {
+    if (obj.hasOwnProperty(properties[i])) {
       return true;
     }
   }
@@ -35,7 +34,12 @@ function hasAllProperties(obj: any, properties: string[]): boolean {
     return obj.hasOwnProperty(property);
   });
 
-  return !!properties.length && (matching.length === properties.length);
+  return !!properties.length && matching.length === properties.length;
 }
 
-export { hasIntersection, hasFullIntersection, hasAnyProperty, hasAllProperties };
+export {
+  hasIntersection,
+  hasFullIntersection,
+  hasAnyProperty,
+  hasAllProperties,
+};

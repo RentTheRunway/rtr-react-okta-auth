@@ -1,0 +1,22 @@
+body,
+html {
+  background-color: whitesmoke;
+}
+
+section {
+  background-color: white;
+  border: 1px solid gray;
+  border-radius: 3px;
+  padding-bottom: 10px;
+  padding: 10px;
+}
+
+.navbar-brand {
+  width: 50px;
+}
+.navbar-brand.rtr-logo img {
+  position: absolute;
+  height: 50px;
+  top: 10px;
+  bottom: 0;
+}

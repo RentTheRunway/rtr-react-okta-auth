@@ -1,19 +1,10 @@
-import { useContext, FC } from 'react';
-import { AuthContext } from "./AuthContext";
-import IWhenHasClaimProps from "./models/IWhenHasClaimProps";
-import IAuthContext from './models/IAuthContext';
-import { hasAnyProperty } from './Intersections';
+import React, { FC } from 'react';
+import IWhenHasClaimProps from './models/IWhenHasClaimProps';
+import WhenHasAllClaims from './WhenHasAllClaims';
 
 const WhenHasClaim: FC<IWhenHasClaimProps> = props => {
-  const authContext = useContext<IAuthContext>(AuthContext);
-  if (!authContext.isAuthenticated) return null;
-
-  const intersects = hasAnyProperty(authContext.user, [props.claim]);
-  if (intersects) {
-    return props.children;
-  }
-
-  return null;
+  const { claim, ...rest } = props;
+  return <WhenHasAllClaims claims={[claim]} {...rest} />;
 };
 
 export default WhenHasClaim;

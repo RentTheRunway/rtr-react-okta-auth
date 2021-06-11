@@ -1,5 +1,4 @@
-
 export default interface IWhenProps {
-    children: any;
-    isTrue: () => boolean;
+  children: any;
+  isTrue: () => boolean;
 }

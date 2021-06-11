@@ -1,14 +1,14 @@
-import { useContext, FC } from 'react';
-import { AuthContext } from "./AuthContext";
-import IWhenHasClaimsProps from "./models/IWhenHasClaimsProps";
-import IAuthContext from './models/IAuthContext';
-import { hasAllProperties } from './Intersections';
+import { FC } from 'react';
+import IWhenHasClaimsProps from './models/IWhenHasClaimsProps';
+import useRtrOktaAuth from './useRtrOktaAuth';
 
 const WhenHasAllClaims: FC<IWhenHasClaimsProps> = props => {
-  const authContext = useContext<IAuthContext>(AuthContext);
-  if (!authContext.isAuthenticated) return null;
+  const { hasAllClaims, authCtx, authorizationStateKnown } = useRtrOktaAuth();
+  const { isAuthenticated } = authCtx.authState;
 
-  const intersects = hasAllProperties(authContext.user, props.claims);
+  if (!isAuthenticated || !authorizationStateKnown) return null;
+
+  const intersects = hasAllClaims(props.claims);
   if (intersects) {
     return props.children;
   }

@@ -1,16 +1,13 @@
-import { useContext, FC } from 'react';
-import { AuthContext } from "./AuthContext";
+import { FC } from 'react';
 import IWhenProps from './models/IWhenProps';
-import IAuthContext from './models/IAuthContext';
+import useWhen from './useWhen';
 
 const When: FC<IWhenProps> = props => {
-    const authContext = useContext<IAuthContext>(AuthContext);
-    if (!authContext.isAuthenticated) return null;
+  const { when } = useWhen();
 
-    if(props.isTrue())
-        return props.children;
+  if (when(props.isTrue)) return props.children;
 
-    return null;
-}
+  return null;
+};
 
 export default When;

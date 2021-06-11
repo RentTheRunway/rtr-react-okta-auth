@@ -1,4 +1,4 @@
 export default interface IWhenHasClaimsProps {
-    children: any;
-    claims: string[];
-  }
+  children: any;
+  claims: string[];
+}

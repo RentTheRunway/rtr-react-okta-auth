@@ -1,19 +1,16 @@
-import { useContext, FC } from "react";
-
-import { AuthContext } from "./AuthContext";
-import IWhenMemberOfProps from "./models/IWhenMemberOfProps";
-import { hasFullIntersection } from './Intersections';
-import IAuthContext from "./models/IAuthContext";
+import { FC } from 'react';
+import IWhenMemberOfProps from './models/IWhenMemberOfProps';
+import useRtrOktaAuth from './useRtrOktaAuth';
 
 const WhenMemberOfAll: FC<IWhenMemberOfProps> = props => {
-  const authContext = useContext<IAuthContext>(AuthContext);
-  if (!authContext.isAuthenticated) return null;
+  const { isMemberOfAll, authCtx, authorizationStateKnown } = useRtrOktaAuth();
+  const { isAuthenticated } = authCtx.authState;
 
-  const fullintersection = hasFullIntersection(
-    props.groups,
-    authContext.groups
-  );
-  if (fullintersection) {
+  if (!isAuthenticated || !authorizationStateKnown) return null;
+
+  const intersects = isMemberOfAll(props.groups);
+
+  if (intersects) {
     return props.children;
   }
 

@@ -1,20 +1,18 @@
-import { useContext } from 'react';
-import { AuthContext } from "./AuthContext";
-import IAuthContext from './models/IAuthContext';
 import IUseWhen from './models/IUseWhen';
+import useRtrOktaAuth from './useRtrOktaAuth';
 
 function useWhen(): IUseWhen {
-    const authContext = useContext<IAuthContext>(AuthContext);
+  const { isAuthenticated } = useRtrOktaAuth().authCtx.authState;
 
-    return {
-        when
-    };
+  return {
+    when,
+  };
 
-    function when(fn: () => boolean) {
-        if(!authContext.isAuthenticated) return false;
+  function when(fn: () => boolean) {
+    if (!isAuthenticated) return false;
 
-        return fn();
-    }
+    return fn();
+  }
 }
 
 export default useWhen;

@@ -1,24 +1,32 @@
-import React, { useContext, FC } from "react";
-import { Route } from "react-router-dom";
-import { AuthContext } from "./AuthContext";
-import IRouteWhenHasClaimsProps from "./models/IRouteWhenHasClaimsProps";
-import { hasAnyProperty } from './Intersections';
-import DefaultUnauthorized from "./DefaultUnauthorized";
-import UnAuthenticated from "./UnAuthenticated";
+import React, { FC } from 'react';
+import { Route } from 'react-router-dom';
+import DefaultUnAuthenticated from './DefaultUnAuthenticated';
+import DefaultUnauthorized from './DefaultUnauthorized';
+import IRouteWhenHasClaimsProps from './models/IRouteWhenHasClaimsProps';
+import useRtrOktaAuth from './useRtrOktaAuth';
 
 const RouteWhenHasAnyClaims: FC<IRouteWhenHasClaimsProps> = props => {
-    const { claims, component, unauthorizedComponent, ...rest } = props;
-    const authContext = useContext(AuthContext);
-    const isAuthenticated = authContext.isAuthenticated;
-    const intersects = hasAnyProperty(authContext.user, claims);
-    const compToRender = isAuthenticated
-      ? intersects
-        ? component
-        : !!unauthorizedComponent
-        ? unauthorizedComponent
-        : DefaultUnauthorized
-      : UnAuthenticated;
-    return <Route {...rest} component={compToRender} />;
-  };
+  const {
+    claims,
+    component,
+    unauthenticatedComponent,
+    unauthorizedComponent,
+    ...rest
+  } = props;
 
-  export default RouteWhenHasAnyClaims;
+  const { hasAnyClaims, authCtx } = useRtrOktaAuth();
+  const { isAuthenticated } = authCtx.authState;
+  const intersects = hasAnyClaims(claims);
+  const compToRender = isAuthenticated
+    ? intersects
+      ? component
+      : !!unauthorizedComponent
+      ? unauthorizedComponent
+      : DefaultUnauthorized
+    : !!unauthenticatedComponent
+    ? unauthenticatedComponent
+    : DefaultUnAuthenticated;
+  return <Route component={compToRender} {...rest} />;
+};
+
+export default RouteWhenHasAnyClaims;
