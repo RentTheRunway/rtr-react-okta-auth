@@ -24,7 +24,7 @@
     "test": "tsdx test --passWithNoTests",
     "test:watch": "tsdx test --watch",
     "test:coverage": "tsdx test --coverage",
-    "test:badges": "jest-coverage-badges",
+    "test:badges": "jest-coverage-badges output ./readme-img",
     "lint": "tsdx lint",
     "prepare": "tsdx build"
   },
