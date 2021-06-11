@@ -1,5 +1,7 @@
 #  Rent the Runway - rtr-react-okta-auth 
 
+![Coverage lines](https://img.shields.io/badge/license-MIT-green)
+
 
 ![Coverage lines](./coverage/badge-lines.svg)
 ![Coverage functions](./coverage/badge-functions.svg)
