@@ -3,10 +3,10 @@
 ![Coverage lines](https://img.shields.io/badge/license-MIT-green)
 
 
-![Coverage lines](./readme-img/badge-lines.svg)
-![Coverage functions](./readme-img/badge-functions.svg)
-![Coverage branches](./readme-img/badge-branches.svg)
-![Coverage statements](./readme-img/badge-statements.svg)
+![Coverage lines](https://raw.githubusercontent.com/RentTheRunway/rtr-react-okta-auth/master/readme-img/badge-lines.svg)
+![Coverage functions](https://raw.githubusercontent.com/RentTheRunway/rtr-react-okta-auth/master/readme-img/badge-functions.svg)
+![Coverage branches](https://raw.githubusercontent.com/RentTheRunway/rtr-react-okta-auth/master/readme-img/badge-branches.svg)
+![Coverage statements](https://raw.githubusercontent.com/RentTheRunway/rtr-react-okta-auth/master/readme-img/badge-statements.svg)
 
 - [Rent the Runway - rtr-react-okta-auth](#rent-the-runway---rtr-react-okta-auth)
   - [Install](#install)
@@ -536,8 +536,8 @@ Within the Okta dashboard, click on the 'Applications' link in the main navigati
 2. Choose OIDC - OpenID Connect.
 3. Then Choose the 'Single Page App' option and hit Next
 
-![create app integration](/readme-img/1_create_app.png)
-![create app integration](/readme-img/2_app_type.png)
+![create app integration](https://raw.githubusercontent.com/RentTheRunway/rtr-react-okta-auth/master/readme-img/1_create_app.png)
+![create app integration](https://raw.githubusercontent.com/RentTheRunway/rtr-react-okta-auth/master/readme-img/2_app_type.png)
 
 For 'Grant type' check the '**Implicit**' option and also check the '**Authorization Code**' option
 
@@ -548,7 +548,7 @@ For 'Grant type' check the '**Implicit**' option and also check the '**Authoriza
 5. Trusted Origins **Base URIs** is generally required if you want to be able to logout. Add http://localhost:3000.
 
 
-![create app integration](/readme-img/3_config_app.png)
+![create app integration](https://raw.githubusercontent.com/RentTheRunway/rtr-react-okta-auth/master/readme-img/3_config_app.png)
 
 Hit Save
 
@@ -561,14 +561,16 @@ Navigate into 'Security` -> 'API' -> 'Authorization Servers' from the main navig
 \
 In the 'Trusted Origins' tab add the various URL's that will need access to the Okta application. This is necessary in order to facilitate CORS.
 
-![Trusted Origins](/readme-img/trusted-origins.png)
-![Trusted Origins](/readme-img/cors.png)
+![Trusted Origins](https://raw.githubusercontent.com/RentTheRunway/rtr-react-okta-auth/master/readme-img/trusted-origins.png)
+![Trusted Origins](https://raw.githubusercontent.com/RentTheRunway/rtr-react-okta-auth/master/readme-img/cors.png)
 
 ### Getting Okta to supply user groups
 Back on the 'Authorization Servers' tab click on 'default' to configure it.
 
 In the 'Claims' tab, add a claim with the following values.
-![Okta Claim](/readme-img/claim.png)
+![Okta Claim](https://raw.githubusercontent.com/RentTheRunway/rtr-react-okta-auth/master/readme-img/claim.png)
+\
+**Do this twice**. Once for the **ID Token** and once for the **Access Token**.
 
 \
 This will add a default claim called 'groups' that will return a list of Okta user groups for which the user is a member. 
@@ -577,17 +579,17 @@ This is not the only way to achieve this but in order to work with the `@rent-th
 
 
 In the 'Access Policies' tab, enable access policy by adding a rule and configuring accordingly
-![Add Rule](/readme-img/rule.png)
+![Add Rule](https://raw.githubusercontent.com/RentTheRunway/rtr-react-okta-auth/master/readme-img/rule.png)
 
 Now `const { user } = useRtrOktaAuth();` will include a `groups` property.
 
 
 ### Getting Okta to supply Claims
 In the Okta admin we can create a claim and associate it with a user-group as so.
-![Create Claim for Single Group](/readme-img/create_claim_single_group.png)
+![Create Claim for Single Group](https://raw.githubusercontent.com/RentTheRunway/rtr-react-okta-auth/master/readme-img/create_claim_single_group.png)
 
 To associate a Claim with more than one group we can use regular expressions
-![Create Claim for Multiple Groups](/readme-img/create_claim_many_groups.png)
+![Create Claim for Multiple Groups](https://raw.githubusercontent.com/RentTheRunway/rtr-react-okta-auth/master/readme-img/create_claim_many_groups.png)
 
 Now `const { user } = useRtrOktaAuth();` will include each claim as an individual property.
 
