@@ -7,15 +7,32 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        node: ['10.x', '12.x', '14.x']
-        os: [ubuntu-latest, windows-latest, macOS-latest]
+        include:
+          - node: '10'
+            os: 'ubuntu-latest'
+          - node: '10'
+            os: 'windows-latest'
+          - node: '12'
+            os: 'ubuntu-latest'
+          - node: '12'
+            os: 'windows-latest'
+          - node: '14'
+            os: 'ubuntu-latest'
+          - node: '14'
+            os: 'windows-latest'
+          - node: '20'
+            os: 'ubuntu-latest'
+          - node: '20'
+            os: 'windows-latest'
+          - node: '20'
+            os: 'macos-latest'
 
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Use Node ${{ matrix.node }}
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
 

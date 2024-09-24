@@ -1,0 +1,25 @@
+---
+
+version: 2
+
+registries:
+  npm-artifactory:
+    type: npm-registry
+    url: https://artifactory.rtr.cloud/artifactory/api/npm/npm/
+    username: ${{ secrets.ARTIFACTORY_DEPLOY_USER }}
+    password: ${{ secrets.ARTIFACTORY_DEPLOY_PASSWORD }}
+
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    rebase-strategy: "disabled"
+    registries:
+      - npm-artifactory
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    rebase-strategy: "disabled"
+    schedule:
+      interval: "weekly"
